@@ -2,13 +2,13 @@
 
 ## Draft Structure
 1. [x] Entry Point
-2. [ ] Application Layer
-3. [ ] Window Layer
-    - [ ] Inputs
-    - [ ] Events
-4. [ ] Renderer
-5. [ ] Render API Abstractions
-6. [ ] Debugging Support
+2. [x] Application Layer
+3. [x] Window Layer
+    - [x] Inputs
+    - [x] Events
+4. [x] Renderer
+5. [x] Render API Abstractions
+6. [x] Debugging Support
 7. [ ] Scripting Lang Support
 8. [ ] Memory System
 9. [ ] Entity-Component System
