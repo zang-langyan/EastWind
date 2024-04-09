@@ -23,7 +23,7 @@ target_link_libraries(EastWind EW_Math)
 
 #[[ GLFW ]]
 set(GLFW_DIR ${PROJECT_SOURCE_DIR}/vendor/glfw)
-include_directories(${GLFW_DIR}/include)
+target_include_directories(EastWind PUBLIC ${GLFW_DIR}/include)
 add_subdirectory(${GLFW_DIR})
 add_compile_definitions(GLFW_INCLUDE_NONE)
 target_link_libraries(EastWind glfw)
@@ -34,8 +34,15 @@ target_link_libraries(EastWind ${OPENGL_LIBRARIES})
 
 #[[ Glad ]]
 set(GLAD_DIR ${PROJECT_SOURCE_DIR}/vendor/glad)
-include_directories(${GLAD_DIR}/include)
+target_include_directories(EastWind PUBLIC ${GLAD_DIR}/include)
 add_subdirectory(${GLAD_DIR})
 target_link_libraries(EastWind glad)
+
+#[[ stb_image ]]
+set(STB_IMAGE_DIR ${PROJECT_SOURCE_DIR}/vendor/stb_image)
+target_include_directories(EastWind PUBLIC ${STB_IMAGE_DIR})
+add_subdirectory(${STB_IMAGE_DIR})
+target_link_libraries(EastWind stb_image)
+
 
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

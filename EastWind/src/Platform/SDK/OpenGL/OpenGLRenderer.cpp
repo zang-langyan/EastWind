@@ -1,4 +1,5 @@
 #include "OpenGLRenderer.h"
+#include "EW_Log.h"
 #include <glad/glad.h>
 
 
@@ -14,9 +15,26 @@ namespace EastWind {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
 
-  void OpenGLRenderer::Draw(const std::shared_ptr<BufferState>& bufferState)
+  void OpenGLRenderer::Init() 
   {
-    glDrawElements(GL_TRIANGLES, bufferState->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
+
+  void OpenGLRenderer::Draw(const Ref<BufferState>& bufferState, const PrimitiveType& type)
+  {
+    switch (type)
+    {
+      case PrimitiveType::Line:
+        glDrawElements(GL_LINES, bufferState->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        break;
+      case PrimitiveType::Triangle:
+        glDrawElements(GL_TRIANGLES, bufferState->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        break;
+
+      default:
+        EW_FATAL("Primitive Type Not Supported!!!");
+    }
   }
 
 }

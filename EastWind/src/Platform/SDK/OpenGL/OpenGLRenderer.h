@@ -1,6 +1,8 @@
 #ifndef OPENGLRENDERER_H
 #define OPENGLRENDERER_H
 
+#include "EW_Core.h"
+
 #include "Renderer/Renderer.h"
 
 namespace EastWind {
@@ -11,7 +13,9 @@ public:
   virtual void SetClearColor(const float (&color)[4]) override; 
   virtual void Clear() override; 
 
-  virtual void Draw(const std::shared_ptr<BufferState>& bufferState) override;
+  virtual void Init() override;
+
+  virtual void Draw(const Ref<BufferState>& bufferState, const PrimitiveType& type) override;
 };
 
 }

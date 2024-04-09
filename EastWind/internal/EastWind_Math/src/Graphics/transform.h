@@ -75,7 +75,7 @@ namespace EastWind {
   struct CamFrustum{
     float l,r,t,b,n,f;
     CamFrustum(const Vec<float,6>& props)
-      : l(props(0)), r(props(1)), t(props(2)), b(props(3)), n(props(4)), f(props(5))
+      : l(props(0)), r(props(1)), b(props(2)), t(props(3)), n(props(4)), f(props(5))
     {}
   };
   

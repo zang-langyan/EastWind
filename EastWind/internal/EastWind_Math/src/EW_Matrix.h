@@ -62,7 +62,7 @@ public:
       // mat[i] = new T[n];
       for (size_t j = 0; j < n; ++j){
         // mat[i][j] = ele;
-        F_mat[m*j+i] = ele;
+        F_mat[m*j+i] = i == j ? ele : 0;
       }
     }
   }

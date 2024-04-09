@@ -5,7 +5,7 @@
 #include "EW_Log.h"
 #include "Event/Event.h"
 
-// #include "Renderer/Renderer.h"
+#include "Renderer/Renderer.h"
 // #include "Renderer/Buffer.h"
 // #include "Renderer/Shader.h"
 
@@ -16,16 +16,16 @@
 namespace EastWind {
   App* App::s_instance = nullptr; 
 
-#define BIND_EVENT_FN(x) std::bind(&App::x, this, std::placeholders::_1)
 
   App::App() 
-    
   {
     EW_ASSERT(!s_instance, "Application already exist!");
     s_instance = this;
 
     m_window = std::unique_ptr<Window>(Window::Create());
-    m_window->SetEventCallback(BIND_EVENT_FN(OnEvent));  
+    m_window->SetEventCallback(BIND_EVENT_FN(App::OnEvent));  
+
+    Renderer::Initialize();
   }
 
   App::~App()
@@ -49,7 +49,7 @@ namespace EastWind {
   {
     EventDispatcher dispatcher(e);
 
-    if (dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose)))
+    if (dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(App::OnWindowClose)))
     {
       EW_CORE_FATAL(e);
       return;

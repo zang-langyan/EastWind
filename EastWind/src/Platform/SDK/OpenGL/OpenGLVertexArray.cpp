@@ -51,7 +51,7 @@ namespace EastWind {
     glBindVertexArray(0);
   }
 
-  void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+  void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
   {
     EW_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Added Vertex Buffer has no Layout!");
 
@@ -87,7 +87,7 @@ namespace EastWind {
     m_vertexBuffers.push_back(vertexBuffer);
   }
 
-  void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+  void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
   {
     this->Bind();
     indexBuffer->Bind();

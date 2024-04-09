@@ -50,14 +50,14 @@
 
 #define LOG(s, pat, color) std::cout << "\033[" << pat << color << "m" << s << "\033[0m\n" 
 
-#define EW_CORE_TRACE(s) LOG(s, "1;7;", "97") 
-#define EW_CORE_INFO(s)  LOG(s, "1;7;", "92") 
+#define EW_CORE_TRACE(s) LOG(s, "1;", "34") 
+#define EW_CORE_INFO(s)  LOG(s, "1;", "92") 
 #define EW_CORE_WARN(s)  LOG(s, "1;7;", "93") 
 #define EW_CORE_ERROR(s) LOG(s, "1;7;", "91") 
 #define EW_CORE_FATAL(s) LOG(s, "1;7;", "91;106") 
 
-#define EW_TRACE(s) LOG(s, "1;7;", "97") 
-#define EW_INFO(s)  LOG(s, "1;7;", "92") 
+#define EW_TRACE(s) LOG(s, "1;", "34") 
+#define EW_INFO(s)  LOG(s, "1;", "92") 
 #define EW_WARN(s)  LOG(s, "1;7;", "93") 
 #define EW_ERROR(s) LOG(s, "1;7;", "91") 
 #define EW_FATAL(s) LOG(s, "1;7;", "91;106") 

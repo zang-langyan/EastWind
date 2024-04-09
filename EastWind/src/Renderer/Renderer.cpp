@@ -47,6 +47,11 @@ namespace EastWind {
     s_Renderer->Clear();
   }
 
+  void Renderer::Initialize()
+  {
+    s_Renderer->Init();
+  }
+
   void Renderer::BeginScene(Camera& camera)
   {
     m_SceneData->VPMatrix = camera.GetViewProjectionMatrix();
@@ -56,14 +61,21 @@ namespace EastWind {
   {
   }
 
-  void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<BufferState>& bufferState)
+  void Renderer::Upload(const Ref<Shader>& shader, const std::string& name, const Mat<float,4,4>& mat)
+  {
+    shader->Bind();
+    std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ModelMatrix", mat);
+    shader->Unbind();
+  }
+
+  void Renderer::Submit(const Ref<Shader>& shader, const Ref<BufferState>& bufferState, const PrimitiveType& type)
   {
     shader->Bind();
     std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_VPMatrix", m_SceneData->VPMatrix);
     // std::cout << "VPMAT:" << m_SceneData->VPMatrix << std::endl;
 
     bufferState->Bind();
-    s_Renderer->Draw(bufferState);
+    s_Renderer->Draw(bufferState, type);
   }
 
 

@@ -43,8 +43,6 @@ private:
   float m_lastFrameTime = 0.0f;
 
   static App* s_instance; 
-protected:
-  float r = 0.,g = 0.,b = 0.;
 };
 
 

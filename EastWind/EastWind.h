@@ -21,6 +21,7 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/BufferState.h"
 #include "Renderer/Shader.h"
+#include "Renderer/Texture.h"
 #include "Renderer/Camera.h"
 #include "Renderer/GraphicsContext.h"
 

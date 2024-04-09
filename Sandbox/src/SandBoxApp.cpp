@@ -2,19 +2,16 @@
 #include <EastWind_Math.h>
 #include <EastWind_Graphics.h>
 
-#include "ImGui/ImGuiLayer.h"
+#include <Platform/SDK/OpenGL/OpenGLShader.h>
 
+#include "ImGui/ImGuiLayer.h"
+#include "MeshLayer.h"
 class TestLayer: public EastWind::Layer
 {
 public:
   TestLayer(float* r, float* g, float* b)
     : Layer("Test"),
-      m_Camera(
-        EastWind::Vec<float,3>({0.f,0.f,1.f}), // position
-        EastWind::Vec<float,3>({0.f,1.f,0.f}), // up
-        EastWind::Vec<float,3>({0.f,0.f,1.f}), // direction
-        EastWind::Vec<float,6>({-1.f,1.5f,1.f,-1.f,1.f,200.f}) // boundary l,r,t,b,n,f
-      ),
+      m_Camera(1280.f/720.f),
       r(r),g(g),b(b)
   {
     /**************************************/
@@ -25,7 +22,7 @@ public:
 
     // Vertex Buffer Creation
     {
-      std::shared_ptr<EastWind::VertexBuffer> vertexBuffer;
+      EastWind::Ref<EastWind::VertexBuffer> vertexBuffer;
       float vertices[3*7] = {
         -0.5f, -0.5f, 0.0f, 0.8f, 0.1f, 0.2f, 1.0f,
         0.5f, -0.5f, 0.0f, 0.2f, 0.8f, 0.1f, 1.0f,
@@ -42,12 +39,13 @@ public:
 
     // Index Buffer Creation
     {
-      std::shared_ptr<EastWind::IndexBuffer> indexBuffer;
+      EastWind::Ref<EastWind::IndexBuffer> indexBuffer;
       uint32_t indices[3] = {0,1,2};
       indexBuffer.reset(EastWind::IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
       m_TriangleVA->SetIndexBuffer(indexBuffer);
     }
 
+    // TriangleShader
     {
       std::string vertexSrc = R"(
         #version 330 core
@@ -82,7 +80,7 @@ public:
             FragColor = v_Color;
         }
       )"; 
-      m_TriangleShader.reset(EastWind::Shader::Create(vertexSrc, fragmentSrc));
+      m_TriangleShader = EastWind::Shader::Create("TriangleShader",vertexSrc, fragmentSrc);
     }
     /**************************************/
 
@@ -95,16 +93,17 @@ public:
 
     // Vertex Buffer Creation
     {
-      std::shared_ptr<EastWind::VertexBuffer> vertexBuffer;
-      float vertices[3*4] = {
-        -0.75f, -0.75f, 0.0f,
-        0.75f, -0.75f, 0.0f,
-        0.75f,  0.75f, 0.0f,
-        -0.75f,  0.75f, 0.0f,
+      EastWind::Ref<EastWind::VertexBuffer> vertexBuffer;
+      float vertices[5*4] = {
+        -0.75f, -0.75f, 0.0f, 0.0f, 0.0f,
+         0.75f, -0.75f, 0.0f, 1.0f, 0.0f,
+         0.75f,  0.75f, 0.0f, 1.0f, 1.0f,
+        -0.75f,  0.75f, 0.0f, 0.0f, 1.0f
       };
       vertexBuffer.reset(EastWind::VertexBuffer::Create(vertices, sizeof(vertices)));
       EastWind::BufferLayout layout = {
         { EastWind::ShaderDataType::Float3, "aPos"   },
+        { EastWind::ShaderDataType::Float2, "aTexCoord"   },
       };
       vertexBuffer->SetLayout(layout);
       m_SquareVA->AddVertexBuffer(vertexBuffer);
@@ -112,12 +111,13 @@ public:
 
     // Index Buffer Creation
     {
-      std::shared_ptr<EastWind::IndexBuffer> indexBuffer;
+      EastWind::Ref<EastWind::IndexBuffer> indexBuffer;
       uint32_t indices[6] = {0,1,2,2,3,0};
       indexBuffer.reset(EastWind::IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
       m_SquareVA->SetIndexBuffer(indexBuffer);
     }
 
+    // SquareShader
     {
       std::string vertexSrc = R"(
         #version 330 core
@@ -125,13 +125,14 @@ public:
         layout (location = 0) in vec3 aPos;
 
         uniform mat4 u_VPMatrix;
+        uniform mat4 u_ModelMatrix;
 
         out vec3 v_Position;
 
         void main()
         {
             v_Position = aPos;
-            gl_Position = u_VPMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+            gl_Position = u_ModelMatrix * u_VPMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
         }
       )";
 
@@ -147,7 +148,21 @@ public:
             FragColor = vec4(v_Position*0.5f+0.5f, 1.0f);
         }
       )"; 
-      m_SquareShader.reset(EastWind::Shader::Create(vertexSrc, fragmentSrc));
+      m_SquareShader = EastWind::Shader::Create("SquareShader", vertexSrc, fragmentSrc);
+    }
+    
+    // TextureShader
+    {
+      m_TextureShader = m_ShaderLib.Load(TEXTURE_SHADER_PATH);
+    }
+
+
+    // Texture
+    {
+      m_CheckerBoardTexture = EastWind::Texture2D::Create(RIVERROCK_TEXTURE_PATH); 
+      m_HammerSickelTexture = EastWind::Texture2D::Create(HAMMERSICKEL_TEXTURE_PATH); 
+      std::dynamic_pointer_cast<EastWind::OpenGLShader>(m_TextureShader)->Bind();
+      std::dynamic_pointer_cast<EastWind::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0); // upload texture based on slot
     }
     /**************************************/
 
@@ -155,31 +170,14 @@ public:
 
   void OnUpdate(EastWind::Timestep ts) override
   {
-    if (EastWind::Input::IsMouseButtonPressed(EW_MOUSE_BUTTON_MIDDLE)){
-      auto [x, y] = EastWind::Input::GetMousePosition(); 
-      auto z = m_Camera.GetPosture().shoot;
-      // std::cout << "x: " << x << ", y: " << y << std::endl;
-      // std::cout << "z: " << z << std::endl;
-      
-      float dx = x - m_MouseX;
-      float radian = EastWind::degree2radian(dx);
-      m_Camera.CamRotateY(radian);
-    } else {
-      auto [x, y] = EastWind::Input::GetMousePosition(); 
-      m_MouseX = x;
-      m_MouseY = y;
-    }
+    m_Camera.OnUpdate(ts);
 
-    {
-      float camMovingSpeed = 1.f;
-      if (EastWind::Input::IsKeyPressed(EW_KEY_W))
-        m_Camera.Translate(EastWind::Vec<float,3>({0,0,-ts*camMovingSpeed}));
-      else if (EastWind::Input::IsKeyPressed(EW_KEY_S))
-        m_Camera.Translate(EastWind::Vec<float,3>({0,0,ts*camMovingSpeed}));
-      else if (EastWind::Input::IsKeyPressed(EW_KEY_A))
-        m_Camera.Translate(EastWind::Vec<float,3>({-ts*camMovingSpeed,0,0}));
-      else if (EastWind::Input::IsKeyPressed(EW_KEY_D))
-        m_Camera.Translate(EastWind::Vec<float,3>({ts*camMovingSpeed,0,0}));
+    if (EastWind::Input::IsKeyPressed(EW_KEY_LEFT_SUPER) && EastWind::Input::IsKeyPressed(EW_KEY_EQUAL)){
+      m_ModelMatrix(0,0) += ts;
+      m_ModelMatrix(1,1) += ts;
+    } else if (EastWind::Input::IsKeyPressed(EW_KEY_LEFT_SUPER) && EastWind::Input::IsKeyPressed(EW_KEY_MINUS)){
+      m_ModelMatrix(0,0) = m_ModelMatrix(0,0)-ts >= 0 ? m_ModelMatrix(0,0)-ts : 0;
+      m_ModelMatrix(1,1) = m_ModelMatrix(1,1)-ts >= 0 ? m_ModelMatrix(1,1)-ts : 0;
     }
 
     EastWind::Renderer::ClearColor({*r, *g, *b, 1.f});
@@ -189,10 +187,16 @@ public:
     // m_Camera.RotateY(EastWind::PI/1800.f);
 
     // --------- Scene Begin ---------
-    EastWind::Renderer::BeginScene(m_Camera);
+    EastWind::Renderer::BeginScene(m_Camera.GetCamera());
 
-    EastWind::Renderer::Submit(m_SquareShader, m_SquareVA);
-    EastWind::Renderer::Submit(m_TriangleShader, m_TriangleVA);
+    // EastWind::Renderer::Upload(m_SquareShader, "u_ModelMatrix", m_ModelMatrix);
+    EastWind::Renderer::Upload(m_TextureShader, "u_ModelMatrix", m_ModelMatrix);
+    m_CheckerBoardTexture->Bind();
+    EastWind::Renderer::Submit(m_TextureShader, m_SquareVA);
+    m_HammerSickelTexture->Bind();
+    EastWind::Renderer::Submit(m_TextureShader, m_SquareVA);
+
+    // EastWind::Renderer::Submit(m_TriangleShader, m_TriangleVA);
 
     EastWind::Renderer::EndScene();
     // --------- Scene End ---------
@@ -204,32 +208,44 @@ public:
 
   void OnEvent(EastWind::Event& e) override
   {
-    if (e.GetEventType() == EastWind::EventType::KeyPressed){
-      EastWind::KeyPressedEvent& event = (EastWind::KeyPressedEvent&)e;
-      if (event.GetKeyCode() == EW_KEY_TAB){
-        EW_CORE_WARN("Tab Key is Pressed");
-      }  
-      EW_INFO( (char)event.GetKeyCode() ); 
-    }
+    m_Camera.OnEvent(e);
+    // if (e.GetEventType() == EastWind::EventType::KeyPressed){
+    //   EastWind::KeyPressedEvent& event = (EastWind::KeyPressedEvent&)e;
+    //   if (event.GetKeyCode() == EW_KEY_TAB){
+    //     EW_CORE_WARN("Tab Key is Pressed");
+    //   }  
+    //   EW_INFO( (char)event.GetKeyCode() ); 
+    // }
   }
 
 private:
   // Buffer Area
-  std::shared_ptr<EastWind::BufferState> m_TriangleVA;
-  std::shared_ptr<EastWind::BufferState> m_SquareVA;
+  EastWind::Ref<EastWind::BufferState> m_TriangleVA;
+  EastWind::Ref<EastWind::BufferState> m_SquareVA;
+
+  // ShaderLibrary
+  EastWind::ShaderLibrary m_ShaderLib;
 
   // Shader
-  std::shared_ptr<EastWind::Shader> m_TriangleShader;
-  std::shared_ptr<EastWind::Shader> m_SquareShader;
+  EastWind::Ref<EastWind::Shader> m_TriangleShader;
+  EastWind::Ref<EastWind::Shader> m_SquareShader;
+  EastWind::Ref<EastWind::Shader> m_TextureShader;
 
-  // Camera
-  EastWind::Camera m_Camera;
+  // Texture
+  EastWind::Ref<EastWind::Texture2D> m_CheckerBoardTexture;
+  EastWind::Ref<EastWind::Texture2D> m_HammerSickelTexture;
+
+  // Camera Controller
+  EastWind::CameraController m_Camera;
 
   // Background Color
   float *r, *g, *b;
 
   // Current Mouse Position
   float m_MouseX, m_MouseY;
+
+  // Model Matrix
+  EastWind::Mat<float,4,4> m_ModelMatrix;
 };
 
 
@@ -239,6 +255,7 @@ public:
   Sandbox()
   {
     PushLayer(new TestLayer(&r,&g,&b));
+    // PushLayer(new MeshLayer());
     PushLayer(new ImGuiLayer(&r,&g,&b));
   }
 
@@ -246,8 +263,8 @@ public:
   {
   }
 
-  
-
+private:
+  float r = 0.5f,g = 0.f,b = 0.f;
 };
 
 EastWind::App* EastWind::CreateApp()

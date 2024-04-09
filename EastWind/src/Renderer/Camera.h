@@ -4,6 +4,11 @@
 #include <EastWind_Math.h>
 #include <EastWind_Graphics.h>
 
+#include "EW_Timestep.h"
+#include "Event/Event.h"
+#include "Event/MouseEvent.h"
+#include "Event/ApplicationEvent.h"
+
 namespace EastWind {
 
 struct CamPosture {
@@ -12,6 +17,7 @@ struct CamPosture {
   Vec<float,4> shoot;
 };
 
+/* Camera */
 class Camera 
 {
 public:
@@ -19,33 +25,42 @@ public:
 
 
   const Vec<float,4>& GetPosition() const { return m_position; };
+  CamPosture GetPosture() const { return {m_right, m_up, m_direction}; };
+
+
   void SetPosition(const Vec<float,4>& position);
   void Translate(const Vec<float,3>& direction);
 
-  CamPosture GetPosture() const { return {m_right, m_up, m_direction}; };
 
- 
-  // Rotate the Camera around the world axis
-  void CamRotateX(const float& radian);
-  void CamRotateY(const float& radian);
-  void CamRotateZ(const float& radian);
+  
+  // Rotate the Camera around the world axis (World Space Coordinates)
+  void WSRotateX(const float& radian);
+  void WSRotateY(const float& radian);
+  void WSRotateZ(const float& radian);
+  void SetWSRotationX(const float& radian);
+  void SetWSRotationY(const float& radian);
+  void SetWSRotationZ(const float& radian);
   
 
   // Rotate the Camera around the self axis (Eye Space Coordinates)
-  // void SetRotation(const float& radian);
-  void RotateX(const float& radian);
-  void RotateY(const float& radian);
-  void RotateZ(const float& radian);
+  void ESRotateX(const float& radian);
+  void ESRotateY(const float& radian);
+  void ESRotateZ(const float& radian);
+  void SetESRotationX(const float& radian);
+  void SetESRotationY(const float& radian);
+  void SetESRotationZ(const float& radian);
   // void Quaternion(const Vec<float,3>& axis, const float& radian);
   
 
   const Mat<float,4,4>& GetViewMatrix() const { return m_ViewMatrix; }
   const Mat<float,4,4>& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
-private:
-  void recalculateViewMat();
-  void lookat(const Vec<float,4>& target);
-private:
+  void RecalculateProjMat(const Vec<float,6>& frustum);
+  void RecalculateViewMat();
+  void RecalculateViewMat(Vec<float,4>& x, Vec<float,4>& y, Vec<float,4>& z, Vec<float,4>& position);
+  void RecalculateVPMatrix();
+  CamPosture lookat(const Vec<float,4>& target);
+public:
   Vec<float,4> m_position;
   Vec<float,4> m_up;
   Vec<float,4> m_direction;
@@ -55,6 +70,34 @@ private:
   Mat<float,4,4> m_ViewMatrix;
   Mat<float,4,4> m_ProjectionMatrix;
   Mat<float,4,4> m_ViewProjectionMatrix;
+
+  Vec<float,4> m_target;
+};
+
+
+/* Camera Controller */
+class CameraController
+{
+public:
+  CameraController(const float& aspectRatio);
+
+  void OnUpdate(Timestep ts);
+  void OnEvent(Event& e);
+
+  Camera& GetCamera() { return m_Camera; }
+  const Camera& GetCamera() const { return m_Camera; }
+
+private:
+  bool OnMouseScrolled(MouseScrolledEvent& e);
+  bool OnWindowResized(WindowResizeEvent& e);
+private:
+  float m_AspectRatio;
+  float m_ZoomLevel = 1.f;
+  float m_CamMovingSpeed = 1.f;
+
+  Vec<float,3> m_CamPosition;
+
+  Camera m_Camera;
 };
 
 }

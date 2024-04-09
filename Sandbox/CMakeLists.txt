@@ -17,8 +17,16 @@ list(APPEND SANDBOX_SRC
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
     )
 
+# Shaders
+add_compile_definitions("TEXTURE_SHADER_PATH=\"${PROJECT_SOURCE_DIR}/assets/shaders/texture_shader.glsl\"")
 
-add_compile_definitions("IMGUI_FONT_PATH=\"${PROJECT_SOURCE_DIR}/assets/Noto_Sans_SC/NotoSansSC-Bold.otf\"")
+# Fonts
+add_compile_definitions("IMGUI_FONT_PATH=\"${PROJECT_SOURCE_DIR}/assets/fonts/Noto_Sans_SC/NotoSansSC-Bold.otf\"")
+
+# Textures
+add_compile_definitions("CHECKBOARD_TEXTURE_PATH=\"${PROJECT_SOURCE_DIR}/assets/textures/Checkerboard.png\"")
+add_compile_definitions("RIVERROCK_TEXTURE_PATH=\"${PROJECT_SOURCE_DIR}/assets/textures/Dry_RiverBed_Rock/dry_riverbed_rock_diff_1k.png\"")
+add_compile_definitions("HAMMERSICKEL_TEXTURE_PATH=\"${PROJECT_SOURCE_DIR}/assets/textures/Hammer_Sickel/Hammer_Sickel.png\"")
 
 
 add_executable(${PROJECT_NAME} ${SANDBOX_SRC})

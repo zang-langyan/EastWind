@@ -71,7 +71,7 @@ public:
     }
     return *this; 
   }
-
+  
   Vec(Vec<T,n>&& other){
     for (size_t i = 0; i < n; ++i){
       v[i] = other(i);
@@ -240,6 +240,13 @@ public:
     return Vx.dot(Vy);
   }
 
+  friend Vec<T,n> operator*(const T& x, const Vec<T,n>& Vy){
+    Vec<T,n> ans;
+    for (size_t i = 0; i < n; ++i){
+      ans(i) = Vy(i)*x;
+    }
+    return ans;
+  }
 
 private:
   T _norm1(){
