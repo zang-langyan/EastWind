@@ -3,6 +3,13 @@ cmake_minimum_required(VERSION 3.20)
 project(EW)
 set(CMAKE_CXX_STANDARD 17)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  add_compile_definitions("EW_PLATFORM_OSX")
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  add_compile_definitions("EW_PLATFORM_WINDOWS")
+endif()
+
+
 file(GLOB_RECURSE EW_SRC ${PROJECT_SOURCE_DIR}/src/*cpp)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
@@ -45,4 +52,3 @@ add_subdirectory(${STB_IMAGE_DIR})
 target_link_libraries(EastWind stb_image)
 
 
-# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

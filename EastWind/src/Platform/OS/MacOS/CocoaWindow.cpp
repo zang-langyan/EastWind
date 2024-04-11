@@ -79,6 +79,12 @@ void CocoaWindow::Init(const WindowProps& props)
   glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height){
     WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
+#ifdef EW_PLATFORM_OSX
+    // MacOs window coordinates and pixel coordinates are not the same
+    // window size glfwGetWindowSize
+    // pixel size glfwGetFramebufferSize
+    glfwGetFramebufferSize(window, &width, &height);
+#endif
     data.Width = width;
     data.Height = height;
 

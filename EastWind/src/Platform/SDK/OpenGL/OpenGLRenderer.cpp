@@ -21,6 +21,11 @@ namespace EastWind {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
 
+  void OpenGLRenderer::SDK_SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+  {
+    glViewport(x, y, width, height);
+  }
+
   void OpenGLRenderer::Draw(const Ref<BufferState>& bufferState, const PrimitiveType& type)
   {
     switch (type)

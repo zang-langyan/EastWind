@@ -60,7 +60,7 @@ public:
   void RecalculateViewMat(Vec<float,4>& x, Vec<float,4>& y, Vec<float,4>& z, Vec<float,4>& position);
   void RecalculateVPMatrix();
   CamPosture lookat(const Vec<float,4>& target);
-public:
+private:
   Vec<float,4> m_position;
   Vec<float,4> m_up;
   Vec<float,4> m_direction;
@@ -87,6 +87,8 @@ public:
   Camera& GetCamera() { return m_Camera; }
   const Camera& GetCamera() const { return m_Camera; }
 
+  float GetZoomLevel() const { return m_ZoomLevel; }
+  void SetZoomLevel(const float& level) { m_ZoomLevel = level; }
 private:
   bool OnMouseScrolled(MouseScrolledEvent& e);
   bool OnWindowResized(WindowResizeEvent& e);

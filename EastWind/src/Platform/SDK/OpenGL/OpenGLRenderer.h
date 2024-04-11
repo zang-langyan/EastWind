@@ -15,6 +15,8 @@ public:
 
   virtual void Init() override;
 
+  virtual void SDK_SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
+
   virtual void Draw(const Ref<BufferState>& bufferState, const PrimitiveType& type) override;
 };
 

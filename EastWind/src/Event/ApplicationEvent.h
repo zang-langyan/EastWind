@@ -8,12 +8,12 @@ namespace EastWind {
 class WindowResizeEvent: public Event
 {
 public:
-  WindowResizeEvent(unsigned width, unsigned height): m_width(width), m_height(height)
+  WindowResizeEvent(uint32_t width, uint32_t height): m_width(width), m_height(height)
   {
   };
 
-  inline unsigned GetWidth()  const { return m_width; }
-  inline unsigned GetHeight() const { return m_height; }
+  inline uint32_t GetWidth()  const { return m_width; }
+  inline uint32_t GetHeight() const { return m_height; }
 
   std::string ToString() const override
   {
@@ -28,7 +28,7 @@ public:
   EVENT_CLASS_CATEGORY(EventCategoryApplication)
 
 private:
-  unsigned m_width, m_height;
+  uint32_t m_width, m_height;
 };
 
 class WindowCloseEvent: public Event

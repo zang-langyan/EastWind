@@ -19,6 +19,14 @@ namespace EastWind {
 
   App::App() 
   {
+#ifdef EW_PLATFORM_OSX
+    EW_INFO("EastWind Engine Built On Mac OS X");
+#endif // EW_PLATFORM_OSX
+#ifdef EW_PLATFORM_WINDOWS
+    EW_INFO("EastWind Engine Built On Windows");
+#endif // EW_PLATFORM_WINDOWS
+
+
     EW_ASSERT(!s_instance, "Application already exist!");
     s_instance = this;
 
@@ -54,7 +62,11 @@ namespace EastWind {
       EW_CORE_FATAL(e);
       return;
     }
-    
+    if (dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(App::OnWindowResize)))
+    {
+      // EW_CORE_TRACE(e);
+    }
+        
     for (auto itr = m_layerStack.end(); itr != m_layerStack.begin(); ){
       (*--itr)->OnEvent(e);
       if (e.Handled){
@@ -70,6 +82,20 @@ namespace EastWind {
     return true;
   }
 
+  bool App::OnWindowResize(WindowResizeEvent& e)
+  {
+    if (0 == e.GetWidth() || 0 == e.GetHeight()){
+      m_minimized = true;
+      return false;
+    }
+
+    m_minimized = false;
+    Renderer::SetViewport(0, 0, e.GetWidth(), e.GetHeight());
+    // EW_CORE_TRACE(e.GetWidth());
+    // EW_CORE_TRACE(e.GetHeight());
+    return false;
+  }
+
   void App::run()
   {
     EW_FATAL("App running!");
@@ -78,8 +104,11 @@ namespace EastWind {
       float time = glfwGetTime();
       Timestep timestep = time - m_lastFrameTime;
       m_lastFrameTime = time;
-      for (Layer* layer: m_layerStack){
-        layer->OnUpdate(timestep);
+
+      if (!m_minimized) {
+        for (Layer* layer: m_layerStack){
+          layer->OnUpdate(timestep);
+        }
       }
       
       m_window->OnUpdate();

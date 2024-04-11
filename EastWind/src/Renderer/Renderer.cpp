@@ -51,6 +51,11 @@ namespace EastWind {
   {
     s_Renderer->Init();
   }
+  
+  void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+  {
+    s_Renderer->SDK_SetViewport(x, y, width, height);
+  }
 
   void Renderer::BeginScene(Camera& camera)
   {

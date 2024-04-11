@@ -11,13 +11,13 @@ namespace EastWind {
 struct WindowProps
 {
   std::string Title;
-  unsigned Width;
-  unsigned Height;
+  uint32_t Width;
+  uint32_t Height;
 
   WindowProps(
       const std::string& title = "东风引擎",
-      unsigned width = 1280,
-      unsigned height = 720
+      uint32_t width = 1280,
+      uint32_t height = 720
   ): Title(title), Width(width), Height(height){} 
 };
 
@@ -32,8 +32,8 @@ public:
   virtual void OnUpdate() = 0;
 
 
-  virtual unsigned GetWidth() const = 0;
-  virtual unsigned GetHeight() const = 0;
+  virtual uint32_t GetWidth() const = 0;
+  virtual uint32_t GetHeight() const = 0;
 
 
   virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
