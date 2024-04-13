@@ -18,7 +18,7 @@ public:
     // Triangle   
     /**************************************/
     // Buffer State Manager
-    m_TriangleVA.reset(EastWind::BufferState::Create());
+    m_TriangleVA = EastWind::BufferState::Create();
 
     // Vertex Buffer Creation
     {
@@ -89,7 +89,7 @@ public:
     // Square   
     /**************************************/
     // Buffer State Manager
-    m_SquareVA.reset(EastWind::BufferState::Create());
+    m_SquareVA = EastWind::BufferState::Create();
 
     // Vertex Buffer Creation
     {
@@ -267,7 +267,3 @@ private:
   float r = 0.5f,g = 0.f,b = 0.f;
 };
 
-EastWind::App* EastWind::CreateApp()
-{
-  return new Sandbox();
-}

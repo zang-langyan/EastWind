@@ -3,14 +3,17 @@ cmake_minimum_required(VERSION 3.20)
 project(sandbox)
 set(CMAKE_CXX_STANDARD 17)
 
-set(SANDBOX_SRC ${PROJECT_SOURCE_DIR}/src/SandBoxApp.cpp)
+set(
+    SANDBOX_SRC 
+    ${PROJECT_SOURCE_DIR}/src/main.cpp
+   )
 
 include_directories(${PROJECT_SOURCE_DIR})
 
 
 
 #[[ ImGui ]]
-set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/vendor/debug/imgui)
+set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/vendor/imgui)
 add_subdirectory(${IMGUI_DIR})
 list(APPEND SANDBOX_SRC 
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp

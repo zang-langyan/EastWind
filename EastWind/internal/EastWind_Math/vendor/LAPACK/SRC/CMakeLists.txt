@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.20)
 project(lapack_src)
 
 enable_language(Fortran)
-set(CMAKE_FC_COMPILER gfortran)
 
 set(LAPACKLIB lapack)
 

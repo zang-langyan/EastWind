@@ -6,14 +6,14 @@
 
 namespace EastWind {
 
-  BufferState* BufferState::Create()
+  Ref<BufferState> BufferState::Create()
   {
     switch (Renderer::GetAPI())
     {
       case Renderer::API::None :
         return nullptr;
       case Renderer::API::OpenGL :
-        return new OpenGLVertexArray();
+        return std::make_shared<OpenGLVertexArray>();
       case Renderer::API::Vulkan :
         return nullptr;
       case Renderer::API::DX12 :

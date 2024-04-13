@@ -91,8 +91,6 @@ namespace EastWind {
 
     m_minimized = false;
     Renderer::SetViewport(0, 0, e.GetWidth(), e.GetHeight());
-    // EW_CORE_TRACE(e.GetWidth());
-    // EW_CORE_TRACE(e.GetHeight());
     return false;
   }
 

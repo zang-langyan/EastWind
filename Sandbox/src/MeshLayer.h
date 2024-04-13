@@ -15,7 +15,7 @@ public:
     // Mesh Creation   
     /**************************************/
     // Buffer State Manager
-    m_MeshVA.reset(EastWind::BufferState::Create());
+    m_MeshVA = EastWind::BufferState::Create();
 
     {
       // Vertex Buffer Creation

@@ -3,7 +3,6 @@
 
 #include "EW_App.h"
 #include "EW_Window.h"
-#include "EW_entry_point.h"
 
 #include "EW_Log.h"
 #include "EW_Layer.h"
