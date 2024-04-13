@@ -15,7 +15,7 @@ struct WindowProps
   uint32_t Height;
 
   WindowProps(
-      const std::string& title = "东风引擎",
+      const std::string& title = "EastWind Engine",
       uint32_t width = 1280,
       uint32_t height = 720
   ): Title(title), Width(width), Height(height){} 

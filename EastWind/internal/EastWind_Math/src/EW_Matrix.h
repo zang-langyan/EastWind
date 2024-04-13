@@ -423,7 +423,7 @@ public:
       float ALPHA = 1;
       int INCX = 1, INCY = 1;
       float BETA = 1;
-      sgemv_(&TRANS, &M, &N, &ALPHA, mat.F_mat, &LDA, vec.v, &INCX, &BETA, ans.v, &INCY);
+      sgemv_(&TRANS, &M, &N, &ALPHA, mat.F_mat, &LDA, vec.get_ptr(), &INCX, &BETA, ans.get_ptr(), &INCY);
     }else if constexpr(std::is_same_v<T,double>){
       char TRANS = 'N';
       int M = m, N = n;
@@ -431,7 +431,7 @@ public:
       double ALPHA = 1;
       int INCX = 1, INCY = 1;
       double BETA = 1;
-      dgemv_(&TRANS, &M, &N, &ALPHA, mat.F_mat, &LDA, vec.v, &INCX, &BETA, ans.v, &INCY);
+      dgemv_(&TRANS, &M, &N, &ALPHA, mat.F_mat, &LDA, vec.get_ptr(), &INCX, &BETA, ans.get_ptr(), &INCY);
     }else{
       for (size_t i = 0; i < m; ++i){
         T entry = 0;

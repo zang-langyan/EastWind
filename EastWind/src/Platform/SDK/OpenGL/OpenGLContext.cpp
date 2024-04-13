@@ -5,7 +5,6 @@
 #include "EW_Core.h"
 
 #include <glad/glad.h>
-#include <OpenGL/gl.h>
 
 
 namespace EastWind {
