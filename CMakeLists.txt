@@ -4,7 +4,6 @@ project(EW_Engine)
 set(EW_DIR ${CMAKE_SOURCE_DIR}/EastWind)
 set(Sandbox_DIR ${CMAKE_SOURCE_DIR}/Sandbox)
 
-# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(${EW_DIR})
 add_subdirectory(${Sandbox_DIR})

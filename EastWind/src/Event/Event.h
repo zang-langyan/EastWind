@@ -1,7 +1,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include "../EW_Core.h"
+#include "EW_Core.h"
 
 namespace EastWind {
 

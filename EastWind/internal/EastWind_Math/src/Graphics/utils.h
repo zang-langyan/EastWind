@@ -1,13 +1,25 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <cmath>
+
 #include "EW_Lapack.h"
 #include "EW_Vector.h"
 #include "EW_Matrix.h"
 
 namespace EastWind {
 
-#define PI 3.14159265358979323846264338327950288419716939937510
+// #define PI 3.14159265358979323846264338327950288419716939937510
+#define PI std::acos(-1.0)
+#define D2R PI/180.
+#define R2D 180./PI
+  
+#ifndef INFINITY
+  #define INFINITY std::numeric_limits<float>::max()
+#endif
+#ifndef INFINITY_INT
+  #define INFINITY_INT std::numeric_limits<int>::max()
+#endif
 
 inline float degree2radian(const float& degree) {
   return degree/180.f*PI;

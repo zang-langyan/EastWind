@@ -16,6 +16,8 @@
 
 #include "EW_Blas.h"
 
+#define EW_EPSILON 0.001f
+
 namespace EastWind {
 
 template<typename T, std::size_t m, std::size_t n>
@@ -58,8 +60,15 @@ public:
       v[i] = i < k ? other(i) : fill;
     }
   }
-
+  
   Vec(const Vec<T,n>& other){
+    for (size_t i = 0; i < n; ++i){
+      v[i] = other(i);
+    }
+  }
+
+  template<size_t k>
+  Vec(const Vec<T,k>& other){
     for (size_t i = 0; i < n; ++i){
       v[i] = other(i);
     }
@@ -137,7 +146,7 @@ public:
 //   * Operators
 // ==========================================================================
   template<typename F>
-  auto operator+(Vec<F,n>& other) {
+  auto operator+(Vec<F,n>& other) const {
     Vec<decltype(v[0]+other(0)), n> ans;
     for (size_t i = 0; i < n; ++i){
       ans(i) = v[i]+other(i);
@@ -145,7 +154,16 @@ public:
     return ans;
   }
 
-  Vec<T,n> operator+(const T x) {
+  template<typename F>
+  auto operator+(Vec<F,n>&& other) const {
+    Vec<decltype(v[0]+other(0)), n> ans;
+    for (size_t i = 0; i < n; ++i){
+      ans(i) = v[i]+other(i);
+    }
+    return ans;
+  }
+
+  Vec<T,n> operator+(const T x) const {
     Vec<T, n> ans;
     for (size_t i = 0; i < n; ++i){
       ans(i) = v[i]+x;
@@ -175,7 +193,15 @@ public:
     return *this;
   }
 
-  Vec<T,n> operator-(const Vec<T, n>& other) {
+  Vec<T,n> operator-() const {
+    Vec<T,n> ans;
+    for (size_t i = 0; i < n; ++i){
+      ans(i) = -v[i];
+    }
+    return ans;
+  }
+
+  Vec<T,n> operator-(const Vec<T, n>& other) const {
     Vec<T,n> ans;
     for (size_t i = 0; i < n; ++i){
       ans(i) = v[i]-other(i);
@@ -183,7 +209,7 @@ public:
     return ans;
   }
 
-  Vec<T,n> operator-(const T x) {
+  Vec<T,n> operator-(const T x) const {
     Vec<T,n> ans;
     for (size_t i = 0; i < n; ++i){
       ans(i) = v[i]-x;
@@ -248,6 +274,43 @@ public:
     return ans;
   }
 
+
+  // Comparison
+  bool operator==(const Vec<T,n>& other) const {
+    for (size_t i = 0; i < n; ++i){
+      if (v[i]-other(i) > EW_EPSILON){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool operator==(const Vec<T,n>&& other) const {
+    for (size_t i = 0; i < n; ++i){
+      if (v[i]-other(i) > EW_EPSILON){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool operator!=(const Vec<T,n>& other) const {
+    for (size_t i = 0; i < n; ++i){
+      if (v[i]-other(i) > EW_EPSILON){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool operator!=(const Vec<T,n>&& other) const {
+    for (size_t i = 0; i < n; ++i){
+      if (v[i]-other(i) > EW_EPSILON){
+        return true;
+      }
+    }
+    return false;
+  }
 private:
   T _norm1(){
     T ans;
@@ -319,7 +382,13 @@ public:
   //     dswap_()
   //   }
   // }
-  
+ 
+  void normalize(){
+    T L = this->norm(); 
+    for (size_t i = 0; i < n; ++i){
+      v[i] /= L;
+    }
+  }
 };
 
 

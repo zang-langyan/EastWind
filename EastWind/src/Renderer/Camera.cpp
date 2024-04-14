@@ -92,8 +92,9 @@ namespace EastWind {
 
 
   void Camera::WSRotateX(const float& radian){
-    auto R = rotateX(radian);
-    auto position = R*m_position;
+    // auto R = rotateX(radian);
+    // auto position = R*m_position;
+    auto position = Vec<float,4>(Quaternion::RotateX(m_position, radian),1.f);
 
     auto [x,y,z] = lookat(m_target);
 
@@ -101,8 +102,9 @@ namespace EastWind {
   }
 
   void Camera::WSRotateY(const float& radian){
-    auto R = rotateY(radian);
-    auto position = R*m_position;
+    // auto R = rotateY(radian);
+    // auto position = R*m_position;
+    auto position = Vec<float,4>(Quaternion::RotateY(m_position, radian),1.f);
 
     auto [x,y,z] = lookat(m_target);
 
@@ -110,8 +112,9 @@ namespace EastWind {
   }
   
   void Camera::WSRotateZ(const float& radian){
-    auto R = rotateZ(radian);
-    auto position = R*m_position;
+    // auto R = rotateZ(radian);
+    // auto position = R*m_position;
+    auto position = Vec<float,4>(Quaternion::RotateZ(m_position, radian),1.f);
 
     auto [x,y,z] = lookat(m_target);
 
@@ -119,8 +122,9 @@ namespace EastWind {
   }
 
   void Camera::SetWSRotationX(const float& radian){
-    auto R = rotateX(radian);
-    m_position = R*m_position;
+    // auto R = rotateX(radian);
+    // m_position = R*m_position;
+    m_position = Vec<float,4>(Quaternion::RotateX(m_position, radian), 1.f);
 
     auto [x,y,z] = lookat(m_target);
     m_right = x;
@@ -131,8 +135,9 @@ namespace EastWind {
   }
 
   void Camera::SetWSRotationY(const float& radian){
-    auto R = rotateY(radian);
-    m_position = R*m_position;
+    // auto R = rotateY(radian);
+    // m_position = R*m_position;
+    m_position = Vec<float,4>(Quaternion::RotateY(m_position, radian), 1.f);
 
     auto [x,y,z] = lookat(m_target);
     m_right = x;
@@ -143,8 +148,9 @@ namespace EastWind {
   }
   
   void Camera::SetWSRotationZ(const float& radian){
-    auto R = rotateZ(radian);
-    m_position = R*m_position;
+    // auto R = rotateZ(radian);
+    // m_position = R*m_position;
+    m_position = Vec<float,4>(Quaternion::RotateZ(m_position, radian), 1.f);
 
     auto [x,y,z] = lookat(m_target);
     m_right = x;

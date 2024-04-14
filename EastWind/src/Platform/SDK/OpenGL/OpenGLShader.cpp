@@ -76,6 +76,7 @@ namespace EastWind {
       default: return "NOT SUPPORTED SHADER";
     }
   }
+
   std::unordered_map<OpenGLShader::OpenGLShaderType, std::string> OpenGLShader::PreProcess(const std::string& source)
   {
     std::unordered_map<OpenGLShaderType, std::string> shaderSrc;

@@ -3,6 +3,6 @@
 
 #include "Graphics/utils.h"
 #include "Graphics/transform.h"
-#include "Graphics/rotate.h"
+#include "Graphics/quaternion.h"
 
 #endif // !EASTWIND_GRAPHICS_H
