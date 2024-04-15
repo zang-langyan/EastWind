@@ -22,7 +22,7 @@
 1. [ ] Multi-Thread Support
 2. [ ] Platform Specific Support
     - [ ] OS Specific
-        - [ ] Windows
+        - [x] Windows
         - [x] MacOS
         - [ ] Linux
     - [ ] Graphics API Specific
