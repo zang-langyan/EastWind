@@ -25,4 +25,8 @@
 #include "Renderer/GraphicsContext.h"
 
 
+#include "Geometry/Ray.h"
+#include "Geometry/Mesh.h"
+#include "Geometry/Object.h"
+
 #endif // !EAST_WIND_H

@@ -1,12 +1,20 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include "Geometry/Mesh.h"
 
 namespace EastWind {
 
-class Object
+class Object : public Mesh
 {
+public:
+  Object(const std::string& OFF_FilePath): Mesh(OFF_FilePath) {} 
+};
 
+class Cube: public Mesh
+{
+public:
+  Cube();
 };
 
 }

@@ -17,9 +17,9 @@ namespace EastWind {
   // rather than where the camera is shooting at
   Camera::Camera(const Vec<float,3>& position, const Vec<float,3>& up, const Vec<float,3>& direction, const Vec<float,6>& boundary)
     : m_position(position,1.f),
-      m_up(up,1.f), 
+      m_up(normalize(up),1.f), 
       m_right(normalize(up.cross(direction)),1.f),
-      m_direction(direction,1.f), 
+      m_direction(normalize(direction),1.f), 
       m_boundary(boundary)
       // m_ViewMatrix(cameraRotate(m_right,m_up,m_direction)*cameraTranslate(m_position)), 
       // m_ProjectionMatrix(cameraPerspective(boundary)), 
@@ -54,6 +54,10 @@ namespace EastWind {
 
   void Camera::RecalculateVPMatrix(){
     m_ViewProjectionMatrix = m_ProjectionMatrix*m_ViewMatrix;
+  }
+
+  void Camera::SetTarget(const Vec4& t){
+    m_target = t;
   }
 
   CamPosture Camera::lookat(const Vec<float,4>& target){
@@ -209,12 +213,13 @@ namespace EastWind {
   CameraController::CameraController(const float& aspectRatio)
     : m_AspectRatio(aspectRatio),
       m_Camera(
-          Vec<float,3>({0.f,0.f,1.f}), // position
+          Vec<float,3>({2.f,2.f,2.f}), // position
           Vec<float,3>({0.f,1.f,0.f}), // up
-          Vec<float,3>({0.f,0.f,1.f}), // direction (z axis)
+          Vec<float,3>({2.f,1.f,2.f}), // direction (z axis)
           Vec<float,6>({-m_AspectRatio*m_ZoomLevel,m_AspectRatio*m_ZoomLevel,-m_ZoomLevel,m_ZoomLevel,1.f,200.f}) // boundary
       )
   {
+    m_Camera.SetTarget(Vec4({0.f,1.f,0.f,1.f}));
   }
 
 

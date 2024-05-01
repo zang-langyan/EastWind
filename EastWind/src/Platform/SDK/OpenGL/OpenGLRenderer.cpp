@@ -18,6 +18,9 @@ namespace EastWind {
   void OpenGLRenderer::Init() 
   {
     glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
 
@@ -30,6 +33,9 @@ namespace EastWind {
   {
     switch (type)
     {
+      case PrimitiveType::Dot:
+        glDrawElements(GL_DOT3_RGB, bufferState->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        break;
       case PrimitiveType::Line:
         glDrawElements(GL_LINES, bufferState->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
         break;

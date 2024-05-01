@@ -5,7 +5,6 @@
 #include "OpenGLShader.h"
 
 #include <cstring>
-#include <fstream>
 #include <glad/glad.h>
 
 namespace EastWind {

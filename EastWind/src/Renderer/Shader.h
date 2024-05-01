@@ -24,6 +24,19 @@ public:
 class ShaderLibrary
 {
 public:
+  ShaderLibrary(){};
+  ShaderLibrary(const std::string& path){
+    auto shader = Shader::Create(path);
+    m_Shaders[shader->GetName()] = shader;
+  }
+  ShaderLibrary(const std::string& vertexSrc, const std::string& fragmentSrc){
+    auto shader = Shader::Create("BasicShader", vertexSrc, fragmentSrc);
+    m_Shaders[shader->GetName()] = shader;
+  }
+  ShaderLibrary(Ref<Shader>& shader){
+    m_Shaders[shader->GetName()] = shader;
+  }
+
   void Add(const std::string& name, const Ref<Shader>& shader);
   void Add(const Ref<Shader>& shader);
 
@@ -34,6 +47,7 @@ public:
 
 
   bool Exist(const std::string& name) const;
+
 private:
   std::unordered_map<std::string, Ref<Shader>> m_Shaders;
 };

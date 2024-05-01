@@ -24,8 +24,9 @@ public:
   enum class PrimitiveType
   {
     None = 0,
-    Line = 1,
-    Triangle = 2
+    Dot = 1,
+    Line = 2,
+    Triangle = 3
   };
 
 public:

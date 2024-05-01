@@ -31,6 +31,8 @@ add_compile_definitions("CHECKBOARD_TEXTURE_PATH=\"${PROJECT_SOURCE_DIR}/assets/
 add_compile_definitions("RIVERROCK_TEXTURE_PATH=\"${PROJECT_SOURCE_DIR}/assets/textures/Dry_RiverBed_Rock/dry_riverbed_rock_diff_1k.png\"")
 add_compile_definitions("HAMMERSICKEL_TEXTURE_PATH=\"${PROJECT_SOURCE_DIR}/assets/textures/Hammer_Sickel/Hammer_Sickel.png\"")
 
+# Meshes
+add_compile_definitions("RABBIT_OFF_FILE_PATH=\"${PROJECT_SOURCE_DIR}/assets/meshes/bunny_nf4000.noff\"")
 
 add_executable(${PROJECT_NAME} ${SANDBOX_SRC})
 

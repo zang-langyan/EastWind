@@ -1,5 +1,23 @@
 # 东风引擎 - East Wind Engine
 
+## Build EastWind 
+### MacOS
+One option is simply execute the `rebuild.sh` shell script. if you have already generated the project, you can execute the `run.sh` script.
+
+Another option is to generate and build the project manually. 
+```shell
+cmake -B build
+cmake --build build
+```
+
+### Windows
+**The important part is to have the GNU compilers g++ and gfortran installed. This project does not support the Microsoft ifort and VS C++ compiler for now.**
+```shell
+cmake -B build -G "Unix Makefiles"
+cmake --build build
+```
+
+
 ## Draft Structure
 1. [x] Entry Point
 2. [x] Application Layer

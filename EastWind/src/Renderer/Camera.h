@@ -26,11 +26,13 @@ public:
 
   const Vec<float,4>& GetPosition() const { return m_position; };
   CamPosture GetPosture() const { return {m_right, m_up, m_direction}; };
+  Vec3 GetDirection() const { return m_direction; }; 
+  Vec3 GetUpDirection() const { return m_up; }; 
+  Vec3 GetRightDirection() const { return m_right; }; 
 
 
   void SetPosition(const Vec<float,4>& position);
   void Translate(const Vec<float,3>& direction);
-
 
   
   // Rotate the Camera around the world axis (World Space Coordinates)
@@ -59,7 +61,9 @@ public:
   void RecalculateViewMat();
   void RecalculateViewMat(Vec<float,4>& x, Vec<float,4>& y, Vec<float,4>& z, Vec<float,4>& position);
   void RecalculateVPMatrix();
+  
   CamPosture lookat(const Vec<float,4>& target);
+  void SetTarget(const Vec4& t);
 private:
   Vec<float,4> m_position;
   Vec<float,4> m_up;

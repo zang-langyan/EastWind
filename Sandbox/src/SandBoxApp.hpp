@@ -254,8 +254,8 @@ class Sandbox: public EastWind::App
 public:
   Sandbox()
   {
-    PushLayer(new TestLayer(&r,&g,&b));
-    // PushLayer(new MeshLayer());
+    // PushLayer(new TestLayer(&r,&g,&b));
+    PushLayer(new MeshLayer(&r,&g,&b));
     PushLayer(new ImGuiLayer(&r,&g,&b));
   }
 
