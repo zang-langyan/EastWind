@@ -18,6 +18,7 @@ namespace EastWind {
       layout (location = 0) in vec3 aPos;
       layout (location = 1) in vec3 aNormal;
 
+      uniform mat4 u_ModelMatrix;
       uniform mat4 u_VPMatrix;
 
       out vec3 v_Position;
@@ -27,7 +28,7 @@ namespace EastWind {
       {
           v_Position = aPos;
           v_Color = vec4(aNormal,1.f);
-          gl_Position = u_VPMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+          gl_Position = u_VPMatrix * u_ModelMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
       }
     )";
 
@@ -106,6 +107,7 @@ namespace EastWind {
         layout (location = 1) in vec3 aNormal;
 
         uniform mat4 u_VPMatrix;
+        uniform mat4 u_ModelMatrix;
 
         out vec3 v_Position;
         out vec4 v_Color;
@@ -114,7 +116,7 @@ namespace EastWind {
         {
             v_Position = aPos;
             v_Color = vec4(aNormal,1.f);
-            gl_Position = u_VPMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+            gl_Position = u_VPMatrix * u_ModelMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
         }
       )";
 
@@ -231,9 +233,31 @@ namespace EastWind {
   
   void Mesh::Draw()
   {
-    // Renderer::Submit(m_ShaderLib->Get("BasicShader"), m_BufferState, Renderer::PrimitiveType::Dot);
-    // Renderer::Submit(m_ShaderLib->Get("BasicShader"), m_BufferState, Renderer::PrimitiveType::Line);
-    Renderer::Submit(m_ShaderLib->Get("BasicShader"), m_BufferState, Renderer::PrimitiveType::Triangle);
+    UploadModelMat();
+    // Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Dot);
+    // Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Line);
+    Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Triangle);
+  }
+
+  void Mesh::SetModelMatrix(const Mat4& modelmat)
+  {
+    m_ModelMatrix = modelmat;
+  }
+
+  void Mesh::UploadModelMat()
+  {
+    m_ShaderLib->Get(m_ActiveShader)->Bind();
+    std::dynamic_pointer_cast<OpenGLShader>(m_ShaderLib->Get(m_ActiveShader))->UploadUniformMat4("u_ModelMatrix", m_ModelMatrix);
+  }
+
+  void Mesh::SetShaderLib(ShaderLibrary *lib)
+  {
+    m_ShaderLib.reset(lib);
   }
   
+  void Mesh::SetActiveShader(const std::string& name)
+  {
+    m_ActiveShader = name;
+  }
+
 }
