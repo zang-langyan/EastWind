@@ -24,9 +24,10 @@
 #include "Renderer/Camera.h"
 #include "Renderer/GraphicsContext.h"
 
-
 #include "Geometry/Ray.h"
 #include "Geometry/Mesh.h"
 #include "Geometry/Object.h"
+
+#include "Scene/SkyDome.h"
 
 #endif // !EAST_WIND_H

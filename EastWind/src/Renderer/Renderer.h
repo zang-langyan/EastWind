@@ -35,6 +35,9 @@ public:
   
   static void Initialize();
 
+  static void DepthTest(bool enable);
+  static void CullFace(bool enable);
+
   static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
   static void BeginScene(Camera& camera);
@@ -49,6 +52,9 @@ protected:
   virtual void Clear() = 0; 
 
   virtual void Init() = 0;
+
+  virtual void SDK_DepthTest(bool enable) = 0;
+  virtual void SDK_CullFace(bool enable) = 0;
 
   virtual void SDK_SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 

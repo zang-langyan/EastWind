@@ -10,44 +10,11 @@ namespace EastWind {
 
   Mesh::Mesh()
   {
-    // Basic Shader
-    Ref<Shader> basic_shader;
-    std::string vertexSrc = R"(
-      #version 330 core
-
-      layout (location = 0) in vec3 aPos;
-      layout (location = 1) in vec3 aNormal;
-
-      uniform mat4 u_ModelMatrix;
-      uniform mat4 u_VPMatrix;
-
-      out vec3 v_Position;
-      out vec4 v_Color;
-
-      void main()
-      {
-          v_Position = aPos;
-          v_Color = vec4(aNormal,1.f);
-          gl_Position = u_VPMatrix * u_ModelMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-      }
-    )";
-
-    std::string fragmentSrc = R"(
-      #version 330 core
-
-      out vec4 FragColor;
-
-      in vec3 v_Position;
-      in vec4 v_Color;
-
-      void main()
-      {
-          FragColor = vec4(v_Position*0.5f+0.5f, 1.0f);
-          // FragColor = v_Color;
-      }
-    )";
-    basic_shader = Shader::Create("BasicShader", vertexSrc, fragmentSrc);
-    m_ShaderLib = std::make_shared<ShaderLibrary>(basic_shader);
+    Ref<Shader> basic_shader = Shader::Create(BASIC_SHADER_GLSL);
+    Ref<Shader> basic_texture_shader = Shader::Create(BASIC_TEXTURE_SHADER_GLSL);
+    m_ShaderLib = std::make_shared<ShaderLibrary>();
+    m_ShaderLib->Add("BasicShader", basic_shader);
+    m_ShaderLib->Add("BasicTextureShader", basic_texture_shader);
   }
 
   Mesh::Mesh(const std::string& OFF_FilePath)
@@ -98,44 +65,11 @@ namespace EastWind {
     m_BufferState->SetIndexBuffer(indexBuffer);
 
     {
-      // Basic Shader
-      Ref<Shader> basic_shader;
-      std::string vertexSrc = R"(
-        #version 330 core
-
-        layout (location = 0) in vec3 aPos;
-        layout (location = 1) in vec3 aNormal;
-
-        uniform mat4 u_VPMatrix;
-        uniform mat4 u_ModelMatrix;
-
-        out vec3 v_Position;
-        out vec4 v_Color;
-
-        void main()
-        {
-            v_Position = aPos;
-            v_Color = vec4(aNormal,1.f);
-            gl_Position = u_VPMatrix * u_ModelMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-        }
-      )";
-
-      std::string fragmentSrc = R"(
-        #version 330 core
-
-        out vec4 FragColor;
-
-        in vec3 v_Position;
-        in vec4 v_Color;
-
-        void main()
-        {
-            FragColor = vec4(v_Position*0.5f+0.5f, 1.0f);
-            FragColor = v_Color;
-        }
-      )";
-      basic_shader = Shader::Create("BasicShader", vertexSrc, fragmentSrc);
-      m_ShaderLib = std::make_shared<ShaderLibrary>(basic_shader);
+      Ref<Shader> basic_shader = Shader::Create(BASIC_SHADER_GLSL);
+      Ref<Shader> basic_texture_shader = Shader::Create(BASIC_TEXTURE_SHADER_GLSL);
+      m_ShaderLib = std::make_shared<ShaderLibrary>();
+      m_ShaderLib->Add("BasicShader", basic_shader);
+      m_ShaderLib->Add("BasicTextureShader", basic_texture_shader);
     }
   }
 

@@ -15,6 +15,10 @@ file(GLOB_RECURSE EW_SRC ${PROJECT_SOURCE_DIR}/src/*cpp)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/src/Event)
 
+add_compile_definitions("BASIC_SHADER_GLSL=\"${PROJECT_SOURCE_DIR}/assets/shaders/basic_shader.glsl\"")
+add_compile_definitions("BASIC_TEXTURE_SHADER_GLSL=\"${PROJECT_SOURCE_DIR}/assets/shaders/basic_texture_shader.glsl\"")
+add_compile_definitions("STUDIO_HDRi_IMG=\"${PROJECT_SOURCE_DIR}/assets/textures/poly_haven_studio_4k.hdr\"")
+
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 add_library(EastWind STATIC ${EW_SRC})

@@ -30,6 +30,7 @@ add_compile_definitions("IMGUI_FONT_PATH=\"${PROJECT_SOURCE_DIR}/assets/fonts/No
 add_compile_definitions("CHECKBOARD_TEXTURE_PATH=\"${PROJECT_SOURCE_DIR}/assets/textures/Checkerboard.png\"")
 add_compile_definitions("RIVERROCK_TEXTURE_PATH=\"${PROJECT_SOURCE_DIR}/assets/textures/Dry_RiverBed_Rock/dry_riverbed_rock_diff_1k.png\"")
 add_compile_definitions("HAMMERSICKEL_TEXTURE_PATH=\"${PROJECT_SOURCE_DIR}/assets/textures/Hammer_Sickel/Hammer_Sickel.png\"")
+add_compile_definitions("STUDIO_HDRi_IMG=\"${PROJECT_SOURCE_DIR}/../EastWind/assets/textures/poly_haven_studio_4k.hdr\"")
 
 # Meshes
 add_compile_definitions("RABBIT_OFF_FILE_PATH=\"${PROJECT_SOURCE_DIR}/assets/meshes/bunny_nf4000.noff\"")

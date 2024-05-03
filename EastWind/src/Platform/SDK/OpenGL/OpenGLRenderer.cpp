@@ -24,6 +24,22 @@ namespace EastWind {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
 
+  void OpenGLRenderer::SDK_DepthTest(bool enable)
+  {
+    if (enable)
+      glEnable(GL_DEPTH_TEST);
+    else
+      glDisable(GL_DEPTH_TEST);
+  }
+
+  void OpenGLRenderer::SDK_CullFace(bool enable)
+  {
+    if (enable)
+      glEnable(GL_CULL_FACE);
+    else
+      glDisable(GL_CULL_FACE);
+  }
+
   void OpenGLRenderer::SDK_SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
   {
     glViewport(x, y, width, height);

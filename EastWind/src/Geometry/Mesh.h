@@ -57,7 +57,9 @@ public:
   void SetModelMatrix(const Mat4& modelmat);
 
   void SetShaderLib(ShaderLibrary *lib);
+
   void SetActiveShader(const std::string& name);
+  Ref<Shader> GetActiveShader() { return m_ShaderLib->Get(m_ActiveShader); }
 protected:
   struct MeshData {
     std::vector<Vertex*> vertices;
@@ -66,13 +68,14 @@ protected:
     Vec3 central;
   };
 
-  Ref<EastWind::BufferState> m_BufferState;
+  Ref<BufferState> m_BufferState;
   Ref<MeshData> m_MeshData;
   
   Ref<ShaderLibrary> m_ShaderLib;
   std::string m_ActiveShader = "BasicShader";
 
   Mat4 m_ModelMatrix;
+  void UploadModelMat();
 
 private:
   static bool Read_OFF_File(const std::string& OFF_File_Path, MeshData& data);
@@ -80,8 +83,6 @@ private:
   static void ReadVertexListNoff(MeshData& data, const int& n_vertex, std::ifstream& fs);
   static void ReadFaceList(MeshData& data, const int& n_face, std::ifstream& fs);
   static void ReadEdgeList(MeshData& data, const int& n_edge);
-
-  void UploadModelMat();
 };
 }
 

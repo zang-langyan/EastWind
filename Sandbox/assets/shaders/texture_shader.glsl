@@ -12,7 +12,7 @@ out vec2 v_TexCoord;
 void main()
 {
   v_TexCoord = aTexCoord;
-  gl_Position = u_ModelMatrix * u_VPMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+  gl_Position = u_VPMatrix * u_ModelMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 }
 
 #type fragment

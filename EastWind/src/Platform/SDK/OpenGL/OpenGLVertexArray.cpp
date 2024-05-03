@@ -1,6 +1,8 @@
 #include "EW_pch.h"
 #include "EW_Core.h"
+#include "EW_Log.h"
 #include "OpenGLVertexArray.h"
+
 
 #include <glad/glad.h>
 

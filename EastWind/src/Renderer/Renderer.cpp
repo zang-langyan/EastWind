@@ -51,7 +51,17 @@ namespace EastWind {
   {
     s_Renderer->Init();
   }
+
+  void Renderer::DepthTest(bool enable)
+  {
+    s_Renderer->SDK_DepthTest(enable);
+  }
   
+  void Renderer::CullFace(bool enable)
+  {
+    s_Renderer->SDK_CullFace(enable);
+  }
+
   void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
   {
     s_Renderer->SDK_SetViewport(x, y, width, height);

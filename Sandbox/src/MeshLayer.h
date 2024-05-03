@@ -1,3 +1,4 @@
+#include "Geometry/Object.h"
 #include <EastWind.h>
 #include <EastWind_Math.h>
 #include <EastWind_Graphics.h>
@@ -11,6 +12,7 @@ public:
     : Layer("Mesh"),
       m_Camera(1280.f/720.f),
       m_rabbit(RABBIT_OFF_FILE_PATH),
+      m_sphere(2.f, 3, 30),
       r(r),g(g),b(b)
   {
     
@@ -66,7 +68,16 @@ public:
     EastWind::Renderer::BeginScene(m_Camera.GetCamera());
 
     // EastWind::Renderer::Submit(m_MeshShader, m_MeshVA);
+
+    EastWind::Renderer::DepthTest(false);
+    EastWind::Renderer::CullFace(false);
+    // m_skydome.SetModelMatrix(EastWind::rotateX(-PI/2.f));
+    m_skydome.Draw();
+    EastWind::Renderer::DepthTest(true);
+    EastWind::Renderer::CullFace(true);
     m_rabbit.Draw();
+    // m_sphere.SetActiveShader("BasicShader");
+    // m_sphere.Draw();
     // m_cube.Draw();
 
     EastWind::Renderer::EndScene();
@@ -90,7 +101,11 @@ private:
 
   // Objects
   EastWind::Mesh m_rabbit;
-  EastWind::Cube m_cube;
+  // EastWind::Cube m_cube;
+  EastWind::Sphere m_sphere;
+
+  // HDRi Light Background SkyDome
+  EastWind::SkyDome m_skydome;
 
   // Current Mouse Position
   float m_MouseX, m_MouseY;

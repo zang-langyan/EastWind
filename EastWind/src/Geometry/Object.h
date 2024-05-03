@@ -14,7 +14,7 @@ public:
 class Plane: public Mesh
 {
 public:
-
+  Plane();
 };
 
 class Cube: public Mesh
@@ -23,6 +23,11 @@ public:
   Cube();
 };
 
+class Sphere: public Mesh
+{
+public:
+  Sphere(float radius, int sectors, int stacks);
+};
 }
 
 
