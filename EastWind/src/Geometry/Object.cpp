@@ -142,13 +142,13 @@ namespace EastWind {
         t = (float)i / stacks;
 
         vertices[(j+i*(sectors+1))*8    ] = x;
-        vertices[(j+i*(sectors+1))*8 + 1] = -z;
-        vertices[(j+i*(sectors+1))*8 + 2] = y;
+        vertices[(j+i*(sectors+1))*8 + 1] = y;
+        vertices[(j+i*(sectors+1))*8 + 2] = z;
         vertices[(j+i*(sectors+1))*8 + 3] = nx;
         vertices[(j+i*(sectors+1))*8 + 4] = ny;
         vertices[(j+i*(sectors+1))*8 + 5] = nz;
-        vertices[(j+i*(sectors+1))*8 + 6] = s;
-        vertices[(j+i*(sectors+1))*8 + 7] = t;
+        vertices[(j+i*(sectors+1))*8 + 6] = 1-s;
+        vertices[(j+i*(sectors+1))*8 + 7] = 1-t;
       }
     }
 

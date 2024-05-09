@@ -5,7 +5,7 @@
 namespace EastWind {
 
   SkyDome::SkyDome(const std::string& hdri_img_path)
-    : Sphere(5.f, 48, 48)
+    : Sphere(100.f, 48, 48)
   {
     m_texture = Texture2D::Create(hdri_img_path); 
     auto shader = GetActiveShader();

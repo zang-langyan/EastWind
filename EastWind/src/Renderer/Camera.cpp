@@ -64,7 +64,7 @@ namespace EastWind {
     auto direction = m_position - target;
     Vec<float,3> z({direction(0),direction(1),direction(2)});
     // Vec<float,3> y({m_up(0),m_up(1),m_up(2)});
-    Vec<float,3> y({0.f,1.f,0.f});
+    Vec<float,3> y({0.f,0.f,1.f});
     Vec<float,3> x = normalize(y.cross(z));
     auto up = Vec<float,4>(normalize(z.cross(x)), 1.f);
     auto right = Vec<float,4>(x, 1.f);
@@ -214,21 +214,21 @@ namespace EastWind {
     : m_AspectRatio(aspectRatio),
       m_Camera(
           Vec<float,3>({2.f,2.f,2.f}), // position
-          Vec<float,3>({0.f,1.f,0.f}), // up
-          Vec<float,3>({2.f,1.f,2.f}), // direction (z axis)
+          Vec<float,3>({0.f,0.f,1.f}), // up
+          Vec<float,3>({2.f,2.f,1.f}), // direction (z axis)
           Vec<float,6>({-m_AspectRatio*m_ZoomLevel,m_AspectRatio*m_ZoomLevel,-m_ZoomLevel,m_ZoomLevel,1.f,200.f}) // boundary
       )
   {
-    m_Camera.SetTarget(Vec4({0.f,1.f,0.f,1.f}));
+    m_Camera.SetTarget(Vec4({0.f,0.f,1.f,1.f}));
   }
 
 
   void CameraController::OnUpdate(Timestep ts)
   {
     if (Input::IsKeyPressed(EW_KEY_A)){
-      m_Camera.SetWSRotationY(-m_CamMovingSpeed*ts);
+      m_Camera.SetWSRotationZ(-m_CamMovingSpeed*ts);
     } else if (Input::IsKeyPressed(EW_KEY_D)){
-      m_Camera.SetWSRotationY(m_CamMovingSpeed*ts);
+      m_Camera.SetWSRotationZ(m_CamMovingSpeed*ts);
     } else if (Input::IsKeyPressed(EW_KEY_W)){
       auto z = m_Camera.GetPosture().shoot;
       Vec<float,3> dir({z(0), z(1), z(2)});

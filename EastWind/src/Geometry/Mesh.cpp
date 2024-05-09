@@ -126,7 +126,7 @@ namespace EastWind {
       ss >> x >> y >> z;
       Vertex* v = new Vertex;
       v->vid = i;
-      v->position = Vec3({x,y,z});
+      v->position = Vec3({x, -z, y});
       data.vertices.push_back(v);
     }
   }
@@ -140,8 +140,8 @@ namespace EastWind {
       ss >> x >> y >> z >> nx >> ny >> nz;
       Vertex* v = new Vertex;
       v->vid = i;
-      v->position = Vec3({x,y,z});
-      v->normal = Vec3({nx,ny,nz});
+      v->position = Vec3({x, -z, y});
+      v->normal = Vec3({nx, ny, nz});
       data.vertices.push_back(v);
     }
   }

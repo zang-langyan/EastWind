@@ -79,6 +79,7 @@ public:
     // m_sphere.SetActiveShader("BasicShader");
     // m_sphere.Draw();
     // m_cube.Draw();
+    // m_plane.Draw();
 
     EastWind::Renderer::EndScene();
     // --------- Scene End ---------
@@ -101,8 +102,9 @@ private:
 
   // Objects
   EastWind::Mesh m_rabbit;
-  // EastWind::Cube m_cube;
+  EastWind::Cube m_cube;
   EastWind::Sphere m_sphere;
+  EastWind::Plane m_plane;
 
   // HDRi Light Background SkyDome
   EastWind::SkyDome m_skydome;
