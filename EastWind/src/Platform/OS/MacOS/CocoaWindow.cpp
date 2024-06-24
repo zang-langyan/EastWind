@@ -72,6 +72,7 @@ void CocoaWindow::Init(const WindowProps& props)
   m_context = new OpenGLContext(m_window);
   m_context->Init();
   
+  // IMPORTANT!!!
   glfwSetWindowUserPointer(m_window, &m_data); // Bind WindowData to glfw window
   SetVSync(true);
 
@@ -80,15 +81,25 @@ void CocoaWindow::Init(const WindowProps& props)
     WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 #ifdef EW_PLATFORM_OSX
-    // MacOs window coordinates and pixel coordinates are not the same
+    // MacOS window coordinates and pixel coordinates are not the same
     // window size glfwGetWindowSize
     // pixel size glfwGetFramebufferSize
-    glfwGetFramebufferSize(window, &width, &height);
-#endif
+    glfwGetWindowSize(window, &width, &height);
     data.Width = width;
     data.Height = height;
+    glfwGetFramebufferSize(window, &width, &height);
+    data.FrameWidth = width;
+    data.FrameHeight = height;
+    WindowResizeEvent event(data.Width, data.Height, width, height);
+#else
+    glfwGetWindowSize(window, &width, &height);
+    data.Width = width;
+    data.Height = height;
+    data.FrameWidth = width;
+    data.FrameHeight = height;
 
-    WindowResizeEvent event(width, height);
+    WindowResizeEvent event(width, height, width, height);
+#endif
     data.EventCallback(event);
   });
 

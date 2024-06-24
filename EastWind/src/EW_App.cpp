@@ -53,6 +53,10 @@ namespace EastWind {
     layer->OnAttach();
   }
 
+  /* Event Callback Function */
+  /* 
+   * When GLFW Receives a Signal
+   * It dispatch an Event and Bind an Event function (calling it atferwards)*/
   void App::OnEvent(Event& e)
   {
     EventDispatcher dispatcher(e);
@@ -90,7 +94,7 @@ namespace EastWind {
     }
 
     m_minimized = false;
-    Renderer::SetViewport(0, 0, e.GetWidth(), e.GetHeight());
+    Renderer::SetViewport(0, 0, e.GetFrameWidth(), e.GetFrameHeight());
     return false;
   }
 

@@ -69,17 +69,17 @@ public:
 
     // EastWind::Renderer::Submit(m_MeshShader, m_MeshVA);
 
-    EastWind::Renderer::DepthTest(false);
-    EastWind::Renderer::CullFace(false);
+    // EastWind::Renderer::DepthTest(false);
+    // EastWind::Renderer::CullFace(false);
     // m_skydome.SetModelMatrix(EastWind::rotateX(-PI/2.f));
-    m_skydome.Draw();
+    // m_skydome.Draw();
     EastWind::Renderer::DepthTest(true);
     EastWind::Renderer::CullFace(true);
     m_rabbit.Draw();
     // m_sphere.SetActiveShader("BasicShader");
     // m_sphere.Draw();
     // m_cube.Draw();
-    // m_plane.Draw();
+    m_plane.Draw();
 
     EastWind::Renderer::EndScene();
     // --------- Scene End ---------

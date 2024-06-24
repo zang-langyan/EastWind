@@ -82,14 +82,21 @@ public:
 
     {
       ImVec4 clear_color = ImVec4(*r, *g, *b, 1.00f);
-      ImGui::Begin("Background Color");
+      ImGui::Begin("Setup");
 
       // Edit a color stored as 4 floats
-      ImGui::ColorEdit4("Color", (float*)&clear_color);
+      ImGui::ColorEdit4("Background Color", (float*)&clear_color);
 
       *r = clear_color.x;
       *g = clear_color.y;
       *b = clear_color.z;
+
+      auto cursor_pos = EastWind::Input::GetMousePosition();
+      ImGui::Text("Cursor Position");
+      ImGui::TextColored(ImVec4(0.1f, 0.9f, 0.2f, 1.0f), "X: %f", cursor_pos.first);
+      ImGui::SameLine();
+      ImGui::TextColored(ImVec4(0.1f, 0.8f, 0.6f, 1.0f), "Y: %f", cursor_pos.second);
+      ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.6f, 1.0f), "Window Size: %d x %d", window_width, window_height);
 
       ImGui::End();
     } 
@@ -112,12 +119,17 @@ public:
 
   void OnEvent(EastWind::Event& e) override
   {
-
+    if (e.GetEventType() == EastWind::EventType::WindowResize){
+      EastWind::WindowResizeEvent& event = (EastWind::WindowResizeEvent&) e;
+      window_width = event.GetWidth();
+      window_height = event.GetHeight();
+    }
   }
 
 private:
   float m_time = 0.f;
   float *r, *g, *b;
+  uint32_t window_width = 1280, window_height = 720;
 
 // private:
 //   void clamp(float& r, float& g, float& b){

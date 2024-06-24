@@ -13,6 +13,7 @@
 #include <cassert>
 #include <iostream>
 #include <cmath>
+#include <climits>
 
 #include "EW_Blas.h"
 

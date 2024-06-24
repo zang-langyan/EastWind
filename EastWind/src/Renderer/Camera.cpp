@@ -213,9 +213,9 @@ namespace EastWind {
   CameraController::CameraController(const float& aspectRatio)
     : m_AspectRatio(aspectRatio),
       m_Camera(
-          Vec<float,3>({2.f,2.f,2.f}), // position
+          Vec<float,3>({0.f,-2.8f,2.f}), // position
           Vec<float,3>({0.f,0.f,1.f}), // up
-          Vec<float,3>({2.f,2.f,1.f}), // direction (z axis)
+          Vec<float,3>({0.f,-2.8f,1.f}), // direction (z axis)
           Vec<float,6>({-m_AspectRatio*m_ZoomLevel,m_AspectRatio*m_ZoomLevel,-m_ZoomLevel,m_ZoomLevel,1.f,200.f}) // boundary
       )
   {

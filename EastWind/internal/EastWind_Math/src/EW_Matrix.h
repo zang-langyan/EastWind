@@ -16,7 +16,7 @@
 namespace EastWind {
 
 template<typename T, size_t m>
-struct LU {
+struct LUSolver {
   T* lu = new T[m*m];
   int* ipiv = new int[m];
   int info;
@@ -41,7 +41,7 @@ private:
   char tri = 'N';
 
 private:
-  LU<T,m> LU;
+  LUSolver<T,m> LU;
 
 // ==========================================================================
 //   * Constructor

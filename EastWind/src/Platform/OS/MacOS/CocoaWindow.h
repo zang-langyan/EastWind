@@ -40,6 +40,7 @@ private:
   {
     std::string Title;
     uint32_t Width, Height;
+    uint32_t FrameWidth, FrameHeight;
     bool VSync;
 
     EventCallbackFn EventCallback;

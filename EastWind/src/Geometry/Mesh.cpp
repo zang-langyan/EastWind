@@ -168,7 +168,7 @@ namespace EastWind {
   void Mesh::Draw()
   {
     UploadModelMat();
-    // Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Dot);
+    Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Dot);
     // Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Line);
     Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Triangle);
   }

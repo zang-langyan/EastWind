@@ -4,6 +4,7 @@
 #include "EW_App.h"
 #include "EW_Window.h"
 
+#include "EW_Core.h"
 #include "EW_Log.h"
 #include "EW_Layer.h"
 #include "EW_LayerStack.h"

@@ -22,6 +22,10 @@ namespace EastWind {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // glEnable(GL_POINT_SPRITE);
+    // glEnable(GL_POINT_SMOOTH);
+    glPointSize(2.8);
   }
 
   void OpenGLRenderer::SDK_DepthTest(bool enable)
@@ -47,10 +51,36 @@ namespace EastWind {
 
   void OpenGLRenderer::Draw(const Ref<BufferState>& bufferState, const PrimitiveType& type)
   {
+    /*
+     * glDrawElements
+     *
+     * 1. mode
+     * GL_POINTS
+     * GL_LINE_STRIP
+     * GL_LINE_LOOP
+     * GL_LINES
+     * GL_LINE_STRIP_ADJACENCY
+     * GL_LINES_ADJACENCY
+     * GL_TRIANGLE_STRIP
+     * GL_TRIANGLE_FAN
+     * GL_TRIANGLES
+     * GL_TRIANGLE_STRIP_ADJACENCY
+     * GL_TRIANGLES_ADJACENCY
+     * GL_PATCHES
+     *
+     * 2. count
+     * 
+     * 3. type
+     * GL_UNSIGNED_BYTE
+     * GL_UNSIGNED_SHORT
+     * GL_UNSIGNED_INT
+     * 
+     * 4.Specifies a pointer to the location where the indices are stored
+     */
     switch (type)
     {
       case PrimitiveType::Dot:
-        glDrawElements(GL_DOT3_RGB, bufferState->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_POINTS, bufferState->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
         break;
       case PrimitiveType::Line:
         glDrawElements(GL_LINES, bufferState->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);

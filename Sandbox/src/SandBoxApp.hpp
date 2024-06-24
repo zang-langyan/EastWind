@@ -264,6 +264,6 @@ public:
   }
 
 private:
-  float r = 0.5f,g = 0.f,b = 0.f;
+  float r = 0.f,g = 0.f,b = 0.f;
 };
 
