@@ -4,6 +4,7 @@
 #include "EW_Core.h"
 #include <EastWind_Math.h>
 #include <EastWind_Graphics.h>
+#include "EW_Log.h"
 
 namespace EastWind {
 
@@ -24,6 +25,20 @@ public:
 class ShaderLibrary
 {
 public:
+  static ShaderLibrary& instance() {
+    static ShaderLibrary ins;
+    if (ins.initialized()) {
+      return ins;
+    }
+    Ref<Shader> basic_shader = Shader::Create(BASIC_SHADER_GLSL);
+    Ref<Shader> basic_texture_shader = Shader::Create(BASIC_TEXTURE_SHADER_GLSL);
+    ins.Add("BasicShader", basic_shader);
+    ins.Add("BasicTextureShader", basic_texture_shader);
+    EW_WARN("Building Shader Library: " << BASIC_SHADER_GLSL << ", " << BASIC_TEXTURE_SHADER_GLSL);
+    ins.setInitialized();
+    return ins;
+  }
+
   ShaderLibrary(){};
   ShaderLibrary(const std::string& path){
     auto shader = Shader::Create(path);
@@ -48,8 +63,11 @@ public:
 
   bool Exist(const std::string& name) const;
 
+  bool initialized() const { return is_initialized; }
+  bool setInitialized() { return is_initialized = true; }
 private:
   std::unordered_map<std::string, Ref<Shader>> m_Shaders;
+  bool is_initialized = false;
 };
 
 }

@@ -134,6 +134,22 @@ public:
   static IndexBuffer* Create(uint32_t* indices, uint32_t count);
 };
 
+
+class FrameBuffer
+{
+public:
+  virtual ~FrameBuffer(){};
+
+  virtual void Bind() const = 0;
+  virtual void Unbind() const = 0;
+
+  virtual void RescaleBuffer(float width, float height) const = 0;
+
+  virtual uint32_t GetTextureId() const = 0;
+
+  static Ref<FrameBuffer> Create(float width, float height);
+};
+
 }
 
 

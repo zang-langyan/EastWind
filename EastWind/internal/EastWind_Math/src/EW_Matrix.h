@@ -288,7 +288,7 @@ public:
 //   * Inverse
 // ==========================================================================
 public:
-  Mat<T,m,n> Inverse(){
+  Mat<T,m,n> Inverse() {
     static_assert(n == m && "Matrix must be square to compute inverse");
     Mat<T,m,n> I;
     int N = n;

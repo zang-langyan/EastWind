@@ -98,12 +98,19 @@ public:
       ImGui::TextColored(ImVec4(0.1f, 0.8f, 0.6f, 1.0f), "Y: %f", cursor_pos.second);
       ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.6f, 1.0f), "Window Size: %d x %d", window_width, window_height);
 
+      EastWind::Ray cursor_ray = EastWind::Input::GetCursorRay();
+      ImGui::Text("Cursor Ray");
+      ImGui::TextColored(ImVec4(0.1f, 0.9f, 0.2f, 1.0f), "ray[0]: %f", cursor_ray.GetOrigin()(0));
+      ImGui::SameLine();
+      ImGui::TextColored(ImVec4(0.1f, 0.8f, 0.6f, 1.0f), "ray[1]: %f", cursor_ray.GetOrigin()(1));
+      ImGui::SameLine();
+      ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.8f, 1.0f), "ray[2]: %f", cursor_ray.GetOrigin()(2));
+
       ImGui::End();
     } 
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
     // Update and Render additional Platform Windows
     // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
     //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)

@@ -220,6 +220,7 @@ namespace EastWind {
       )
   {
     m_Camera.SetTarget(Vec4({0.f,0.f,1.f,1.f}));
+    EW_WARN("Building Static CameraController: aspectRatio=" << aspectRatio);
   }
 
 

@@ -21,10 +21,10 @@ namespace EastWind {
     std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformInt("u_Texture", 0);
   }
 
-  void SkyDome::Draw()
+  void SkyDome::Draw(Renderer::PrimitiveType primitive_type)
   {
     UploadModelMat();
     m_texture->Bind();
-    Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Triangle);
+    Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Triangle);
   }
 }

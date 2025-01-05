@@ -194,7 +194,6 @@ namespace EastWind {
     indexBuffer.reset(IndexBuffer::Create(indices.data(), indices.size()));
     m_BufferState->SetIndexBuffer(indexBuffer);
 
-    m_ActiveShader = "BasicTextureShader";
-
+    // m_ActiveShader = "BasicTextureShader";
   }
 }

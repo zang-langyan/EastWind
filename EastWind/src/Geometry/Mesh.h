@@ -33,19 +33,39 @@ struct Edge {
 struct Face {
   Id fid;
   Vec<int,3> indices;
+  Vertex* va;
+  Vertex* vb;
+  Vertex* vc;
   Vec3 fnormal;
   HalfEdge* halfedge;
+
+  bool contain(const Vec3& p) const {
+    float s1 = (p - va->position) * (vb->position - va->position);
+    float s2 = (p - vb->position) * (vc->position - vb->position);
+    float s3 = (p - vc->position) * (va->position - vc->position);
+    return (s1 > 0 && s2 > 0 && s3 > 0) || 
+           (s1 < 0 && s2 < 0 && s3 < 0);
+  };
 };
 
 struct HalfEdge{
   Id hid;
   HalfEdge* twin;
   HalfEdge* next;
-  Vertex* vertex;
+  Vertex* half_va;
+  Vertex* half_vb;
   Edge* edge;
   Face* face;
 };
 
+class Ray;
+
+struct MeshData {
+  std::vector<Vertex*> vertices;
+  std::vector<Edge*> edges;
+  std::vector<Face*> faces;
+  Vec3 central;
+};
 
 class Mesh
 {
@@ -53,25 +73,26 @@ public:
   Mesh();
   Mesh(const std::string& OFF_FilePath);
 
-  virtual void Draw();
+  Ref<MeshData> GetMeshData() { return m_MeshData; }
+
+  virtual void Draw(Renderer::PrimitiveType primitive_type = Renderer::PrimitiveType::Triangle);
   void SetModelMatrix(const Mat4& modelmat);
 
-  void SetShaderLib(ShaderLibrary *lib);
-
   void SetActiveShader(const std::string& name);
-  Ref<Shader> GetActiveShader() { return m_ShaderLib->Get(m_ActiveShader); }
-protected:
-  struct MeshData {
-    std::vector<Vertex*> vertices;
-    std::vector<Edge*> edges;
-    std::vector<Face*> faces;
-    Vec3 central;
-  };
+  Ref<Shader> GetActiveShader() { return ShaderLibrary::instance().Get(m_ActiveShader); }
 
+public:
+  inline void AddVertex(Vec3 vert);
+  inline void AddVertex(Vec3 vert, Vec3 normal);
+  inline void AddFace(Vec<int,3> face);
+
+  void BuildBuffer();
+
+protected:
+  friend Ray;
   Ref<BufferState> m_BufferState;
   Ref<MeshData> m_MeshData;
   
-  Ref<ShaderLibrary> m_ShaderLib;
   std::string m_ActiveShader = "BasicShader";
 
   Mat4 m_ModelMatrix;

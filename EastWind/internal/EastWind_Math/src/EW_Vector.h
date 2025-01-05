@@ -54,6 +54,12 @@ public:
     }
   }
 
+  Vec(std::initializer_list<T> lst){
+    for (size_t i = 0; i < n; ++i){
+      v[i] = i < lst.size() ? *(lst.begin()+i) : 0;
+    }
+  }
+
   template<size_t k>
   Vec(const Vec<T,k>& other, T fill){
     static_assert(k < n && "use the normal constructor");
@@ -275,6 +281,35 @@ public:
     return ans;
   }
 
+  Vec<T,n> operator*(const T& x){
+    Vec<T,n> ans;
+    for (size_t i = 0; i < n; ++i){
+      ans(i) = v[i]*x;
+    }
+    return ans;
+  }
+
+  Vec<T,n>& operator*=(const T& scaler){
+    for (size_t i = 0; i < n; ++i){
+      v[i] *= scaler;
+    }
+    return *this;
+  }
+
+  Vec<T,n> operator/(const T& x){
+    Vec<T,n> ans;
+    for (size_t i = 0; i < n; ++i){
+      ans(i) = v[i]/x;
+    }
+    return ans;
+  }
+
+  Vec<T,n>& operator/=(const T& scaler){
+    for (size_t i = 0; i < n; ++i){
+      v[i] /= scaler;
+    }
+    return *this;
+  }
 
   // Comparison
   bool operator==(const Vec<T,n>& other) const {

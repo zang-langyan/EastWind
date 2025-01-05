@@ -48,7 +48,7 @@
 
 #include "EW_pch.h"
 
-#define LOG(s, pat, color) std::cout << "\033[" << pat << color << "m" << s << "\033[0m\n" 
+#define LOG(s, pat, color) std::cout << __FILE__ << "[" << __LINE__ << "]:\n" << "\033[" << pat << color << "m" << s << "\033[0m\n" 
 
 #define EW_CORE_TRACE(s) LOG(s, "1;", "34") 
 #define EW_CORE_INFO(s)  LOG(s, "1;", "92") 

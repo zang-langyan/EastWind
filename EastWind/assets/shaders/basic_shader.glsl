@@ -13,7 +13,8 @@ out vec4 v_Color;
 void main()
 {
   v_Position = aPos;
-  v_Color = vec4(aNormal,1.f);
+  vec3 normal_color = ( aNormal + 1.f ) * 0.5f;
+  v_Color = vec4(normal_color,1.f);
   gl_Position = u_VPMatrix * u_ModelMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 }
 

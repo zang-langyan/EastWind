@@ -10,12 +10,20 @@ class MeshLayer: public EastWind::Layer
 public:
   MeshLayer(float* r, float* g, float* b)
     : Layer("Mesh"),
-      m_Camera(1280.f/720.f),
+      m_Camera(EastWind::CameraController::instance()),
       m_rabbit(RABBIT_OFF_FILE_PATH),
-      m_sphere(2.f, 3, 30),
+      m_sphere(1.f, 50, 50),
       r(r),g(g),b(b)
   {
-    
+    EW_WARN("Rabbit mesh path: " << RABBIT_OFF_FILE_PATH);
+    auto scale_mat = EastWind::Mat4(5.f);
+    scale_mat(3,3) = 1.f;
+    auto trans_mat = EastWind::translate(EastWind::Vec3({0.f,0.f,-1.f}));
+    auto model_mat = scale_mat * trans_mat;
+    m_plane.SetModelMatrix(model_mat);
+    EW_ERROR(model_mat);
+
+    m_sphere.SetModelMatrix(trans_mat);
   }
 
   void OnUpdate(EastWind::Timestep ts) override
@@ -75,9 +83,13 @@ public:
     // m_skydome.Draw();
     EastWind::Renderer::DepthTest(true);
     EastWind::Renderer::CullFace(true);
+    if (EastWind::Input::GetCursorRay().Hit(m_rabbit)) {
+      EW_ERROR("Hitting Rabbit Object");
+      m_rabbit.SetActiveShader("BasicTextureShader");
+    }
     m_rabbit.Draw();
     // m_sphere.SetActiveShader("BasicShader");
-    // m_sphere.Draw();
+    m_sphere.Draw();
     // m_cube.Draw();
     m_plane.Draw();
 

@@ -2,9 +2,30 @@
 
 namespace EastWind {
 
-  bool Ray::Hit(const Ray& ray, const Mesh& mesh)
+  bool Ray::Hit(const Face& f) const 
   {
-    return true;
+    float D = f.va->position * f.fnormal;
+    float t = (D - f.fnormal * m_pos) / (f.fnormal * m_dir);
+    Vec3 P = m_pos + t * m_dir;
+    return f.contain(P);
+  }
+
+  bool Ray::Hit(const Face* f) const
+  {
+    float D = f->va->position * f->fnormal;
+    float t = (D - f->fnormal * m_pos) / (f->fnormal * m_dir);
+    Vec3 P = m_pos + t * m_dir;
+    return f->contain(P);
+  }
+
+  bool Ray::Hit(const Mesh& mesh) const
+  {
+    for (Face* f : mesh.m_MeshData->faces) {
+      if (Hit(f)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

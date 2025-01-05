@@ -5,31 +5,10 @@
 #include "EW_Log.h"
 #include "Platform/SDK/OpenGL/OpenGLShader.h"
 
-
 namespace EastWind {
 
-  Mesh::Mesh()
+  void Mesh::BuildBuffer()
   {
-    Ref<Shader> basic_shader = Shader::Create(BASIC_SHADER_GLSL);
-    Ref<Shader> basic_texture_shader = Shader::Create(BASIC_TEXTURE_SHADER_GLSL);
-    m_ShaderLib = std::make_shared<ShaderLibrary>();
-    m_ShaderLib->Add("BasicShader", basic_shader);
-    m_ShaderLib->Add("BasicTextureShader", basic_texture_shader);
-  }
-
-  Mesh::Mesh(const std::string& OFF_FilePath)
-  {
-    // EW_CORE_WARN("Initializing Mesh!!!");
-    MeshData data;
-    bool ok = Read_OFF_File(OFF_FilePath, data);
-
-    if (!ok){
-      EW_CORE_WARN("Failed to Read Mesh Data from " + OFF_FilePath);
-      EW_ASSERT(ok, "");
-    }
-    m_MeshData = std::make_shared<MeshData>(data);
-    // m_MeshData.reset(&data);
-
     m_BufferState = EastWind::BufferState::Create();
 
     // Vertex Buffer
@@ -63,16 +42,54 @@ namespace EastWind {
     }
     indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
     m_BufferState->SetIndexBuffer(indexBuffer);
+  }
+
+  Mesh::Mesh()
+  {
+  }
+
+  Mesh::Mesh(const std::string& OFF_FilePath)
+  {
+    // EW_CORE_WARN("Initializing Mesh!!!");
+    MeshData data;
+    bool ok = Read_OFF_File(OFF_FilePath, data);
+
+    if (!ok){
+      EW_CORE_WARN("Failed to Read Mesh Data from " + OFF_FilePath);
+      EW_ASSERT(ok, "");
+    }
+    m_MeshData = std::make_shared<MeshData>(data);
+    // m_MeshData.reset(&data);
 
     {
-      Ref<Shader> basic_shader = Shader::Create(BASIC_SHADER_GLSL);
-      Ref<Shader> basic_texture_shader = Shader::Create(BASIC_TEXTURE_SHADER_GLSL);
-      m_ShaderLib = std::make_shared<ShaderLibrary>();
-      m_ShaderLib->Add("BasicShader", basic_shader);
-      m_ShaderLib->Add("BasicTextureShader", basic_texture_shader);
+      BuildBuffer();
     }
   }
 
+  inline void Mesh::AddVertex(Vec3 vert)
+  {
+    Vertex* v = new Vertex;
+    v->vid = m_MeshData->vertices.size();
+    v->position = vert;
+    m_MeshData->vertices.push_back(v);
+  }
+
+  inline void Mesh::AddVertex(Vec3 vert, Vec3 normal)
+  {
+    Vertex* v = new Vertex;
+    v->vid = m_MeshData->vertices.size();
+    v->position = vert;
+    v->normal = normal;
+    m_MeshData->vertices.push_back(v);
+  }
+
+  inline void Mesh::AddFace(Vec<int,3> face)
+  {
+      Face* fc = new Face;
+      fc->fid = m_MeshData->faces.size();
+      fc->indices = face;
+      m_MeshData->faces.push_back(fc);
+  }
 
   bool Mesh::Read_OFF_File(const std::string& OFF_File_Path, MeshData& data)
   {
@@ -156,6 +173,12 @@ namespace EastWind {
       Face* fc = new Face;
       fc->fid = i;
       fc->indices = Vec<int,3>({a,b,c});
+      fc->va = data.vertices[a];
+      fc->vb = data.vertices[b];
+      fc->vc = data.vertices[c];
+      Vec3 ba = fc->vb->position - fc->va->position, ca = fc->vc->position - fc->va->position;
+      fc->fnormal = ba.cross(ca);
+      fc->fnormal.normalize();
       data.faces.push_back(fc);
     }
   }
@@ -165,12 +188,13 @@ namespace EastWind {
   }
 
   
-  void Mesh::Draw()
+  void Mesh::Draw(Renderer::PrimitiveType primitive_type)
   {
     UploadModelMat();
-    Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Dot);
-    // Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Line);
-    Renderer::Submit(m_ShaderLib->Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Triangle);
+    Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, primitive_type);
+    // Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Dot);
+    // Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Line);
+    // Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Triangle);
   }
 
   void Mesh::SetModelMatrix(const Mat4& modelmat)
@@ -180,13 +204,8 @@ namespace EastWind {
 
   void Mesh::UploadModelMat()
   {
-    m_ShaderLib->Get(m_ActiveShader)->Bind();
-    std::dynamic_pointer_cast<OpenGLShader>(m_ShaderLib->Get(m_ActiveShader))->UploadUniformMat4("u_ModelMatrix", m_ModelMatrix);
-  }
-
-  void Mesh::SetShaderLib(ShaderLibrary *lib)
-  {
-    m_ShaderLib.reset(lib);
+    ShaderLibrary::instance().Get(m_ActiveShader)->Bind();
+    std::dynamic_pointer_cast<OpenGLShader>(ShaderLibrary::instance().Get(m_ActiveShader))->UploadUniformMat4("u_ModelMatrix", m_ModelMatrix);
   }
   
   void Mesh::SetActiveShader(const std::string& name)

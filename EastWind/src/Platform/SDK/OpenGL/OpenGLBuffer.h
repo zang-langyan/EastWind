@@ -1,6 +1,7 @@
 #ifndef OPENGLBUFFER_H
 #define OPENGLBUFFER_H
 
+#include "EW_Log.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/Renderer.h"
 
@@ -39,6 +40,25 @@ public:
 private:
   uint32_t m_IndexBufferId;
   uint32_t m_count;
+};
+
+class OpenGLFrameBuffer : public FrameBuffer
+{
+public:
+  OpenGLFrameBuffer(float width, float height);
+  virtual ~OpenGLFrameBuffer();
+
+  virtual void Bind() const override;
+  virtual void Unbind() const override;
+
+  virtual void RescaleBuffer(float width, float height) const override;
+
+  virtual uint32_t GetTextureId() const override { return m_texture_id; }
+
+private:
+  uint32_t m_FrameBufferId;
+  uint32_t m_RenderBufferId;
+  uint32_t m_texture_id;
 };
 
 }

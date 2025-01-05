@@ -4,10 +4,14 @@
 #include <EastWind_Math.h>
 #include <EastWind_Graphics.h>
 
+#include "EW_App.h"
+#include "EW_Window.h"
 #include "EW_Timestep.h"
 #include "Event/Event.h"
 #include "Event/MouseEvent.h"
 #include "Event/ApplicationEvent.h"
+
+#include "EW_Log.h"
 
 namespace EastWind {
 
@@ -29,7 +33,7 @@ public:
   Vec3 GetDirection() const { return m_direction; }; 
   Vec3 GetUpDirection() const { return m_up; }; 
   Vec3 GetRightDirection() const { return m_right; }; 
-
+  Vec<float,6> GetBoundary() const { return m_boundary; };
 
   void SetPosition(const Vec<float,4>& position);
   void Translate(const Vec<float,3>& direction);
@@ -54,8 +58,8 @@ public:
   // void Quaternion(const Vec<float,3>& axis, const float& radian);
   
 
-  const Mat<float,4,4>& GetViewMatrix() const { return m_ViewMatrix; }
-  const Mat<float,4,4>& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+  Mat<float,4,4> GetViewMatrix() const { return m_ViewMatrix; }
+  Mat<float,4,4> GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
   void RecalculateProjMat(const Vec<float,6>& frustum);
   void RecalculateViewMat();
@@ -83,6 +87,12 @@ private:
 class CameraController
 {
 public:
+  static CameraController& instance() {
+    static Window& window = EastWind::App::Get().GetWindow();
+    static CameraController ins((float)window.GetWidth()/(float)window.GetHeight());
+    return ins;
+  }
+
   CameraController(const float& aspectRatio);
 
   void OnUpdate(Timestep ts);

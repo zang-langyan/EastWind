@@ -79,7 +79,7 @@ namespace EastWind {
   void Renderer::Upload(const Ref<Shader>& shader, const std::string& name, const Mat<float,4,4>& mat)
   {
     shader->Bind();
-    std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ModelMatrix", mat);
+    std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4(name, mat);
     shader->Unbind();
   }
 

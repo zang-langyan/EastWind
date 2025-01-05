@@ -45,6 +45,24 @@ namespace EastWind {
     return nullptr;
   }
 
+  Ref<FrameBuffer> FrameBuffer::Create(float width, float height)
+  {
+    switch (Renderer::GetAPI())
+    {
+      case Renderer::API::None :
+        return nullptr;
+      case Renderer::API::OpenGL :
+        return std::make_shared<OpenGLFrameBuffer>(width, height);
+      case Renderer::API::Vulkan :
+        return nullptr;
+      case Renderer::API::DX12 :
+        return nullptr;
+      case Renderer::API::Metal :
+        return nullptr;
+    }
+
+    return nullptr;
+  }
 
 }
 
