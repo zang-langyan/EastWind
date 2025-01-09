@@ -38,7 +38,7 @@ public:
     start *= -(2.f*f*n)/(f-n);
     Mat4 vp_inverse = cam.GetViewProjectionMatrix().Inverse();
     start = vp_inverse * start;
-    return Ray(start, cam.GetDirection());
+    return Ray(start, -cam.GetDirection());
   }
 
 protected:

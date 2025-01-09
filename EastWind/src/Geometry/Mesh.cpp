@@ -20,6 +20,10 @@ namespace EastWind {
     const int n_vertices = m_MeshData->vertices.size();
     float vertices[n_vertices*6];
     for (int i = 0; i < n_vertices; ++i){
+      // vertices[i*6]   = m_MeshData->vertices[i]->position(0);
+      // vertices[i*6+1] = m_MeshData->vertices[i]->position(1);
+      // vertices[i*6+2] = m_MeshData->vertices[i]->position(2);
+
       vertices[i*6]   = m_MeshData->vertices[i]->position(0)*10;
       vertices[i*6+1] = m_MeshData->vertices[i]->position(1)*10;
       vertices[i*6+2] = m_MeshData->vertices[i]->position(2)*10;

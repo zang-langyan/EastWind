@@ -86,8 +86,11 @@ public:
     if (EastWind::Input::GetCursorRay().Hit(m_rabbit)) {
       EW_ERROR("Hitting Rabbit Object");
       m_rabbit.SetActiveShader("BasicTextureShader");
+      m_rabbit.Draw(EastWind::Renderer::PrimitiveType::Line);
+    } else {
+      m_rabbit.SetActiveShader("BasicShader");
+      m_rabbit.Draw();
     }
-    m_rabbit.Draw();
     // m_sphere.SetActiveShader("BasicShader");
     m_sphere.Draw();
     // m_cube.Draw();

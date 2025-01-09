@@ -27,8 +27,12 @@ include_directories(${EW_MATH_DIR})
 add_library(${PROJECT_NAME} STATIC ${EW_MATH_SRC})
 # set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
+find_library(GFORTRAN_LIB libgfortran.a)
+find_library(QUADMATH_LIB libquadmath.a)
+find_library(GCC_LIB libgcc.a)
 target_link_libraries(${PROJECT_NAME} ${GFORTRAN_LIB})
 target_link_libraries(${PROJECT_NAME} ${QUADMATH_LIB})
+target_link_libraries(${PROJECT_NAME} ${GCC_LIB})
 target_link_libraries(${PROJECT_NAME} blas)
 target_link_libraries(${PROJECT_NAME} lapack)
 

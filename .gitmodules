@@ -1,0 +1,6 @@
+[submodule "EastWind/vendor/assimp"]
+	path = EastWind/vendor/assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "EastWind/vendor/bullet3"]
+	path = EastWind/vendor/bullet3
+	url = https://github.com/bulletphysics/bullet3.git
