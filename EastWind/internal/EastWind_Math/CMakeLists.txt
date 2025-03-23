@@ -24,7 +24,8 @@ include_directories(${EW_MATH_DIR}/src)
 include_directories(${EW_MATH_DIR})
 # include_directories(${EW_MATH_DIR}/lib)
 
-add_library(${PROJECT_NAME} STATIC ${EW_MATH_SRC})
+# add_library(${PROJECT_NAME} STATIC ${EW_MATH_SRC})
+add_library(${PROJECT_NAME} SHARED ${EW_MATH_SRC})
 # set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 find_library(GFORTRAN_LIB libgfortran.a)

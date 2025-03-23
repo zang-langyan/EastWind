@@ -9,6 +9,8 @@
 // #include "Renderer/Buffer.h"
 // #include "Renderer/Shader.h"
 
+#include "Core/ReloadManager.h"
+
 #include <GLFW/glfw3.h>
 // #include <OpenGL/OpenGL.h>
 #include <glad/glad.h>
@@ -101,6 +103,35 @@ namespace EastWind {
   void App::run()
   {
     EW_FATAL("App running!");
+
+    ShaderLibrary::instance().RegistReloadFunc();
+    std::condition_variable stop_reload_thrd;
+    std::mutex stop_reload_mtx;
+    std::thread reload_thrd = std::thread(
+      // [&stop_reload_thrd, &stop_reload_mtx](){
+      [&](){
+        m_window->GetGraphicsContext()->Init();
+        EW_TRACE("Starting ReloadManager Thread...");
+        while (true){
+          // EW_INFO("ReloadManager Start...");
+          if (ReloadManager::instance().reload() != 0) {
+            EW_FATAL("ReloadManager reload Failed");
+            exit(-1);
+          }
+          // m_window->GetGraphicsContext()->SwapBuffers();
+          // EW_ERROR("ReloadManager Finished");
+          // std::this_thread::sleep_until(
+          //   std::chrono::steady_clock::now() + std::chrono::milliseconds(1000) // sleep for one second
+          // );
+          std::unique_lock<std::mutex> lck(stop_reload_mtx);
+          if (stop_reload_thrd.wait_for(lck, std::chrono::milliseconds(1000)) == std::cv_status::no_timeout) {
+            break;
+          }
+        }
+      }
+    );
+    reload_thrd.detach();
+
     while (m_running)
     {
       float time = glfwGetTime();
@@ -115,6 +146,7 @@ namespace EastWind {
       
       m_window->OnUpdate();
     }
+    stop_reload_thrd.notify_all();
   }
 
 

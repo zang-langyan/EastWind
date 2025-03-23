@@ -16,6 +16,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <thread>
+#include <mutex>
+
 #ifdef EW_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif

@@ -4,7 +4,7 @@
 
 #include "EW_Core.h"
 #include "Event/Event.h"
-
+#include "Renderer/GraphicsContext.h"
 
 namespace EastWind {
 
@@ -42,7 +42,7 @@ public:
 
 
   virtual void* GetNativeWindow() const = 0; 
-
+  virtual GraphicsContext* GetGraphicsContext() = 0;
   static Window* Create(const WindowProps& props = WindowProps());
 };
 

@@ -74,4 +74,19 @@ include(${BULLET3_DIR}/UseBullet.cmake)
 add_subdirectory(${BULLET3_DIR})
 target_link_libraries(EastWind BulletDynamics BulletCollision LinearMath)
 
+#[[ gflags ]]
+set(GFLAGS_DIR ${PROJECT_SOURCE_DIR}/vendor/gflags)
+target_include_directories(EastWind PUBLIC ${GFLAGS_DIR}/src)
+add_subdirectory(${GFLAGS_DIR})
+target_link_libraries(EastWind gflags::gflags)
 
+
+
+# ---------------------------------------
+# Unit Test
+# ---------------------------------------
+option(BUILD_UT "Build Unit Test" ON)
+set(UT_DIR ${PROJECT_SOURCE_DIR}/ut)
+if(BUILD_SINGLE)
+  add_subdirectory(${UT_DIR})
+endif()

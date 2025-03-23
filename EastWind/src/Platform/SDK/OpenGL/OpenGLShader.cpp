@@ -3,14 +3,17 @@
 #include "EW_Log.h"
 
 #include "OpenGLShader.h"
+#include "Utility/MD5.h"
 
 #include <cstring>
 #include <glad/glad.h>
 
 namespace EastWind {
 
-  OpenGLShader::OpenGLShader(const std::string& path)
+  OpenGLShader::OpenGLShader(const std::string& path) :
+    m_path(path)
   {
+    m_md5 = MD5::instance().compute_from_path(path);
     std::string source = ReadFile(path);
     auto shaderSrc = PreProcess(source);
     Compile(shaderSrc, m_rendererId);
@@ -112,12 +115,13 @@ namespace EastWind {
     char infoLog[512];
 
     unsigned int shaderProgram = glCreateProgram();
-    rendererId = shaderProgram;
 
     std::vector<GLuint> openglShaderIDs;
     openglShaderIDs.reserve(shaderSource.size());
     for (auto&& [type, src]: shaderSource){
+      EW_FATAL("Create Shader...");
       auto shader = glCreateShader(type);
+      EW_FATAL("Create Shader Success");
       const char* src_cstr = src.c_str();
       glShaderSource(shader, 1, &src_cstr, NULL);
       glCompileShader(shader);
@@ -158,11 +162,31 @@ namespace EastWind {
       return;
     }
 
+    if (rendererId) {
+      glDeleteProgram(rendererId);
+    }
+    rendererId = shaderProgram;
+    EW_INFO("Created Program: " << rendererId);
+
     for (auto id : openglShaderIDs){
       glDeleteShader(id);
     }
   }
 
+  int OpenGLShader::reload() {
+    if (m_path.empty() || m_md5 == MD5::instance().compute_from_path(m_path)) {
+      EW_ERROR("Shader reload skipped. md5sum: (" << m_path << "): " << m_md5);
+      return 0;
+    }
+    EW_ERROR("Shader reload start. md5sum: (" << m_path << "): " << m_md5);
+    m_md5 = MD5::instance().compute_from_path(m_path);
+    std::string source = ReadFile(m_path);
+    auto shaderSrc = PreProcess(source);
+    Compile(shaderSrc, m_rendererId);
+
+    EW_ERROR("Shader reloaded. md5sum: (" << m_path << "): " << m_md5);
+    return 0;
+  }
 
   void OpenGLShader::Bind() const 
   {

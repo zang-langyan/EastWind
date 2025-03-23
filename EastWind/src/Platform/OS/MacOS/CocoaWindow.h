@@ -28,6 +28,7 @@ public:
   virtual bool IsVSync() const override;
 
   inline void* GetNativeWindow() const override { return m_window; }; 
+  inline GraphicsContext* GetGraphicsContext() override { return m_context; };
 private:
   virtual void Init(const WindowProps& props);
   virtual void Shutdown();

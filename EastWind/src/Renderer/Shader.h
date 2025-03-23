@@ -6,6 +6,8 @@
 #include <EastWind_Graphics.h>
 #include "EW_Log.h"
 
+#include "Core/ReloadManager.h"
+
 namespace EastWind {
 
 class Shader
@@ -20,6 +22,8 @@ public:
 
   static Ref<Shader> Create(const std::string& path);
   static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+
+  virtual int reload() = 0;
 };
 
 class ShaderLibrary
@@ -60,6 +64,19 @@ public:
 
   Ref<Shader> Get(const std::string& name);
 
+  int reload() {
+    for (auto&& [shader_name, shader_ptr] : m_Shaders) {
+      int ret = shader_ptr->reload();
+      if (ret != 0) {
+        return ret;
+      }
+    }
+    return 0;
+  }
+
+  void RegistReloadFunc() {
+    ReloadManager::instance().regist("ShaderLibrary", [=]()->int{ return this->reload(); });
+  }
 
   bool Exist(const std::string& name) const;
 

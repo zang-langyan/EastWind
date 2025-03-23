@@ -20,16 +20,16 @@ namespace EastWind {
     const int n_vertices = m_MeshData->vertices.size();
     float vertices[n_vertices*6];
     for (int i = 0; i < n_vertices; ++i){
-      // vertices[i*6]   = m_MeshData->vertices[i]->position(0);
-      // vertices[i*6+1] = m_MeshData->vertices[i]->position(1);
-      // vertices[i*6+2] = m_MeshData->vertices[i]->position(2);
+      vertices[i*6]   = m_MeshData->vertices[i]->position(0);
+      vertices[i*6+1] = m_MeshData->vertices[i]->position(1);
+      vertices[i*6+2] = m_MeshData->vertices[i]->position(2);
 
-      vertices[i*6]   = m_MeshData->vertices[i]->position(0)*10;
-      vertices[i*6+1] = m_MeshData->vertices[i]->position(1)*10;
-      vertices[i*6+2] = m_MeshData->vertices[i]->position(2)*10;
-      vertices[i*6+3] = m_MeshData->vertices[i]->normal(0);
-      vertices[i*6+4] = m_MeshData->vertices[i]->normal(1);
-      vertices[i*6+5] = m_MeshData->vertices[i]->normal(2);
+      // vertices[i*6]   = m_MeshData->vertices[i]->position(0)*10;
+      // vertices[i*6+1] = m_MeshData->vertices[i]->position(1)*10;
+      // vertices[i*6+2] = m_MeshData->vertices[i]->position(2)*10;
+      vertices[i*6+3] = m_MeshData->vertices[i]->vnormal(0);
+      vertices[i*6+4] = m_MeshData->vertices[i]->vnormal(1);
+      vertices[i*6+5] = m_MeshData->vertices[i]->vnormal(2);
     }
     vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
     vertexBuffer->SetLayout(layout);
@@ -83,7 +83,7 @@ namespace EastWind {
     Vertex* v = new Vertex;
     v->vid = m_MeshData->vertices.size();
     v->position = vert;
-    v->normal = normal;
+    v->vnormal = normal;
     m_MeshData->vertices.push_back(v);
   }
 
@@ -161,8 +161,8 @@ namespace EastWind {
       ss >> x >> y >> z >> nx >> ny >> nz;
       Vertex* v = new Vertex;
       v->vid = i;
-      v->position = Vec3({x, -z, y});
-      v->normal = Vec3({nx, ny, nz});
+      v->position = Vec3({x, -z, y}) * 10.f;
+      v->vnormal = Vec3({nx, ny, nz});
       data.vertices.push_back(v);
     }
   }
@@ -177,10 +177,10 @@ namespace EastWind {
       Face* fc = new Face;
       fc->fid = i;
       fc->indices = Vec<int,3>({a,b,c});
-      fc->va = data.vertices[a];
-      fc->vb = data.vertices[b];
-      fc->vc = data.vertices[c];
-      Vec3 ba = fc->vb->position - fc->va->position, ca = fc->vc->position - fc->va->position;
+      fc->fv_a = data.vertices[a];
+      fc->fv_b = data.vertices[b];
+      fc->fv_c = data.vertices[c];
+      Vec3 ba = fc->fv_b->position - fc->fv_a->position, ca = fc->fv_c->position - fc->fv_a->position;
       fc->fnormal = ba.cross(ca);
       fc->fnormal.normalize();
       data.faces.push_back(fc);

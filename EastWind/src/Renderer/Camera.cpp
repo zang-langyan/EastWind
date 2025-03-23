@@ -186,23 +186,20 @@ namespace EastWind {
   }
 
   void Camera::SetESRotationX(const float& radian){
-    auto R = rotateX(radian);
-    m_up = R * m_up;
-    m_direction = R * m_direction;
+    m_direction = Vec<float,4>(Quaternion::Rotate(m_direction, m_right, radian), 1.f);
+    m_up = Vec<float,4>(Quaternion::Rotate(m_up, m_right, radian), 1.f);
     RecalculateViewMat();
   }
 
   void Camera::SetESRotationY(const float& radian){
-    auto R = rotateY(radian);
-    m_right = R * m_right;
-    m_direction = R * m_direction;
+    m_direction = Vec<float,4>(Quaternion::Rotate(m_direction, m_up, radian), 1.f);
+    m_right = Vec<float,4>(Quaternion::Rotate(m_right, m_up, radian), 1.f);
     RecalculateViewMat();
   }
 
   void Camera::SetESRotationZ(const float& radian){
-    auto R = rotateZ(radian);
-    m_up = R * m_up;
-    m_right = R * m_right;
+    m_up = Vec<float,4>(Quaternion::Rotate(m_up, m_direction, radian), 1.f);
+    m_right = Vec<float,4>(Quaternion::Rotate(m_right, m_direction, radian), 1.f);
     RecalculateViewMat();
   }
 
@@ -219,7 +216,7 @@ namespace EastWind {
           Vec<float,6>({-m_AspectRatio*m_ZoomLevel,m_AspectRatio*m_ZoomLevel,-m_ZoomLevel,m_ZoomLevel,1.f,200.f}) // boundary
       )
   {
-    m_Camera.SetTarget(Vec4({0.f,0.f,1.f,1.f}));
+    m_Camera.SetTarget(Vec4({0.f,0.f,0.f,1.f}));
     EW_WARN("Building Static CameraController: aspectRatio=" << aspectRatio);
   }
 

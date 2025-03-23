@@ -30,6 +30,7 @@ public:
 
   virtual const std::string GetName() const override { return m_name; };
 
+  virtual int reload() override;
 public:
   void UploadUniformInt(const std::string& name, int value);
 
@@ -49,6 +50,8 @@ private:
 private:
   uint32_t m_rendererId;
   std::string m_name;
+  std::string m_path = "";
+  std::string m_md5 = "";
 };
 
 }

@@ -21,28 +21,33 @@ typedef int Id;
 struct Vertex {
   Id vid;
   Vec3 position;
-  Vec3 normal;
-  HalfEdge* halfedge;
+  Vec3 vnormal;
+  std::vector<HalfEdge*> vhes;
 };
 
 struct Edge {
   Id eid;
-  HalfEdge* halfedge;
+  Vertex* ev_a;
+  Vertex* ev_b;
+  HalfEdge* ehe_a;
+  HalfEdge* ehe_b;
 };
 
 struct Face {
   Id fid;
   Vec<int,3> indices;
-  Vertex* va;
-  Vertex* vb;
-  Vertex* vc;
+  Vertex* fv_a;
+  Vertex* fv_b;
+  Vertex* fv_c;
   Vec3 fnormal;
-  HalfEdge* halfedge;
+  HalfEdge* fhe_a;
+  HalfEdge* fhe_b;
+  HalfEdge* fhe_c;
 
   bool contain(const Vec3& p) const {
-    float s1 = (p - va->position) * (vb->position - va->position);
-    float s2 = (p - vb->position) * (vc->position - vb->position);
-    float s3 = (p - vc->position) * (va->position - vc->position);
+    float s1 = (p - fv_a->position) * (fv_b->position - fv_a->position);
+    float s2 = (p - fv_b->position) * (fv_c->position - fv_b->position);
+    float s3 = (p - fv_c->position) * (fv_a->position - fv_c->position);
     return (s1 > 0 && s2 > 0 && s3 > 0) || 
            (s1 < 0 && s2 < 0 && s3 < 0);
   };
@@ -52,10 +57,10 @@ struct HalfEdge{
   Id hid;
   HalfEdge* twin;
   HalfEdge* next;
-  Vertex* half_va;
-  Vertex* half_vb;
-  Edge* edge;
-  Face* face;
+  Vertex* hv_a;
+  Vertex* hv_b;
+  Edge* he;
+  Face* hf;
 };
 
 class Ray;

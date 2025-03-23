@@ -4,7 +4,7 @@ namespace EastWind {
 
   bool Ray::Hit(const Face& f) const 
   {
-    float D = f.va->position * f.fnormal;
+    float D = f.fv_a->position * f.fnormal;
     float t = (D - f.fnormal * m_pos) / (f.fnormal * m_dir);
     Vec3 P = m_pos + t * m_dir;
     return f.contain(P);
@@ -12,7 +12,7 @@ namespace EastWind {
 
   bool Ray::Hit(const Face* f) const
   {
-    float D = f->va->position * f->fnormal;
+    float D = f->fv_a->position * f->fnormal;
     float t = (D - f->fnormal * m_pos) / (f->fnormal * m_dir);
     Vec3 P = m_pos + t * m_dir;
     return f->contain(P);

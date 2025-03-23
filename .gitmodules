@@ -4,3 +4,6 @@
 [submodule "EastWind/vendor/bullet3"]
 	path = EastWind/vendor/bullet3
 	url = https://github.com/bulletphysics/bullet3.git
+[submodule "EastWind/vendor/gflags"]
+	path = EastWind/vendor/gflags
+	url = https://github.com/gflags/gflags.git
