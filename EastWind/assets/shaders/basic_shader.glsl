@@ -29,5 +29,5 @@ in vec4 v_Color;
 void main()
 {
     FragColor = v_Color;
-    // FragColor = vec4(v_Position*0.5f+0.5f, 1.0f);
+    //FragColor = vec4(v_Position*0.5f+0.5f, 1.0f);
 }

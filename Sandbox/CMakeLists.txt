@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(
     SANDBOX_SRC 
     ${PROJECT_SOURCE_DIR}/src/main.cpp
-   )
+)
 
 include_directories(${PROJECT_SOURCE_DIR})
 

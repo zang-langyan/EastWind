@@ -15,6 +15,7 @@
 #define EW_BLAS_H
 
 
+#ifndef EWMATH_MKL
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -303,5 +304,5 @@ void dtrsm_(char* SIDE, char* UPLO, char* TRANSA, char* DIAG, int* M, int* N, do
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-
+#endif // EWMATH_MKL
 #endif // !EW_BLAS_H

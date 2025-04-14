@@ -81,7 +81,7 @@ public:
     // m_skydome.SetModelMatrix(EastWind::rotateX(-PI/2.f));
     // m_skydome.Draw();
     EastWind::Renderer::DepthTest(true);
-    EastWind::Renderer::CullFace(true);
+    EastWind::Renderer::CullFace(false);
     if (EastWind::Input::GetCursorRay().Hit(m_rabbit)) {
       EW_ERROR("Hitting Rabbit Object");
       m_rabbit.SetActiveShader("BasicTextureShader");

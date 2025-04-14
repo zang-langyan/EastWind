@@ -1,6 +1,10 @@
 #ifndef EW_PCH_H
 #define EW_PCH_H
 
+#ifdef EW_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
+
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -19,9 +23,6 @@
 #include <thread>
 #include <mutex>
 
-#ifdef EW_PLATFORM_WINDOWS
-	#include <Windows.h>
-#endif
 
 inline void ltrim(std::string& s){
   s.erase(

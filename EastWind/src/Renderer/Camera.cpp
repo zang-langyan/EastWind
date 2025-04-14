@@ -253,7 +253,11 @@ namespace EastWind {
   bool CameraController::OnMouseScrolled(MouseScrolledEvent& e)
   {
     m_ZoomLevel -= e.GetYOffset()*0.25f;
+#ifdef _MSC_BUILD
+    m_ZoomLevel = max(m_ZoomLevel, 0.25f);
+#else
     m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
+#endif
 
     m_Camera.RecalculateProjMat(Vec<float,6>({-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel, 1.f, 200.f}));
     return false;

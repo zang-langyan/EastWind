@@ -124,7 +124,7 @@ namespace EastWind {
     float nx, ny, nz; // normal 
     float s, t; // texture coordinates
 
-    float vertices[(stacks+1)*(sectors+1)*8];
+    std::vector<float> vertices((stacks+1)*(sectors+1)*8);
     for (int i = 0; i <= stacks; ++i){
       float phi = PI/2 - i*stackStep; // PI/2 ~ -PI/2
       float xy = radius * cosf(phi);
@@ -185,7 +185,7 @@ namespace EastWind {
       { EastWind::ShaderDataType::Float2, "aTexCoord" },
     };
     
-    vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+    vertexBuffer.reset(VertexBuffer::Create(vertices.data(), sizeof(vertices.data())));
     vertexBuffer->SetLayout(layout);
     m_BufferState->AddVertexBuffer(vertexBuffer);
 

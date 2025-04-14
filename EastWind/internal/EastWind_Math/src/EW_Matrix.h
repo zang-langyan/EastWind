@@ -10,16 +10,32 @@
 #ifndef EW_MATRIX_H
 #define EW_MATRIX_H
 
+#include "EW_Vector.h"
+
+#ifdef EWMATH_MKL
+#include "mkl.h"
+#else
 #include "EW_Blas.h"
 #include "EW_Lapack.h"
-#include "EW_Vector.h"
+#endif
+
 namespace EastWind {
 
 template<typename T, size_t m>
 struct LUSolver {
+#ifdef EWMATH_MKL
+  MKL_INT* ipiv = new MKL_INT[m];
+#else
   T* lu = new T[m*m];
   int* ipiv = new int[m];
+#endif
   int info;
+  ~LUSolver() {
+#ifndef EWMATH_MKL
+    delete[] lu;
+#endif
+    delete[] ipiv;
+  }
 };
 
   
@@ -44,7 +60,7 @@ private:
   LUSolver<T,m> LU;
 
 // ==========================================================================
-//   * Constructor
+//   * Constructor (Column Major)
 // ==========================================================================
 public:
   Mat(){
@@ -138,7 +154,7 @@ public:
 //   * IO Stream 
 // ==========================================================================
 public:
-  friend std::ostream& operator<<(std::ostream& os, Mat<T,m,n>& mat){
+  friend std::ostream& operator<<(std::ostream& os, const Mat<T,m,n>& mat){
     os << "Mat<" << m << "," << n << ">" << std::endl;
     for (size_t i = 0; i < m; ++i){
       os << "[";
@@ -151,7 +167,7 @@ public:
     return os;
   }
 
-  friend std::ostream& operator<<(std::ostream& os, Mat<T,m,n>&& mat){
+  friend std::ostream& operator<<(std::ostream& os, const Mat<T,m,n>&& mat){
     os << "Mat<" << m << "," << n << ">" << std::endl;
     for (size_t i = 0; i < m; ++i){
       os << "[";
@@ -291,6 +307,14 @@ public:
   Mat<T,m,n> Inverse() {
     static_assert(n == m && "Matrix must be square to compute inverse");
     Mat<T,m,n> I;
+#ifdef EWMATH_MKL
+    MKL_INT N = n;
+    if constexpr(std::is_same_v<T,float>){
+      LU.info = LAPACKE_sgesv(LAPACK_COL_MAJOR, N, N, F_mat, N, LU.ipiv, I.F_mat, N);
+    } else if constexpr(std::is_same_v<T,double>){
+      LU.info = LAPACKE_dgesv(LAPACK_COL_MAJOR, N, N, F_mat, N, LU.ipiv, I.F_mat, N);
+    }
+#else
     int N = n;
     for (size_t i = 0; i < m*m; ++i){
       LU.lu[i] = F_mat[i];
@@ -300,7 +324,7 @@ public:
     } else if constexpr(std::is_same_v<T,double>){
       dgesv_(&N, &N, LU.lu, &N, LU.ipiv, I.F_mat, &N, &LU.info); 
     }
-  
+#endif
     if (LU.info > 0){
       std::cout << "U(" << LU.info << "," << LU.info << ") is exactly zero.\n The factorization"
                 " has been completed, but the factor U is exactly"
@@ -309,7 +333,7 @@ public:
     } else if (LU.info < 0) {
       std::cout << "the" << -LU.info << "-th argument had an illegal value" << std::endl;
     }
-
+  
     return I;
   }
 
@@ -318,6 +342,15 @@ public:
 // ==========================================================================
 public:
   auto norm(char level){
+#ifdef EWMATH_MKL
+    if constexpr(std::is_same_v<T,float>){
+      MKL_INT M = m, N = n;
+      return LAPACKE_slange(LAPACK_COL_MAJOR, level, M, N, F_mat, M);
+    }else if constexpr(std::is_same_v<T,double>){
+      MKL_INT M = m, N = n;
+      return LAPACKE_dlange(LAPACK_COL_MAJOR, level, M, N, F_mat, M);
+    }
+#else
     if constexpr(std::is_same_v<T,float>){
       int M = m, N = n;
       float WORK[(level == 'I'? m : 1)];
@@ -363,6 +396,7 @@ public:
         return static_cast<double>(std::sqrt(ans));
       }
     }
+#endif
   }
 
 // ==========================================================================
@@ -415,7 +449,24 @@ public:
 
   friend Vec<T,m> operator*(const Mat<T,m,n>& mat, const Vec<T,n>& vec){
     Vec<T,m> ans;
-    
+#ifdef EWMATH_MKL
+    if constexpr(std::is_same_v<T,float>){
+      CBLAS_TRANSPOSE TRANS = CblasNoTrans;
+      MKL_INT M = m, N = n;
+      MKL_INT LDA = m;
+      float ALPHA = 1;
+      MKL_INT INCX = 1, INCY = 1;
+      float BETA = 1;
+      cblas_sgemv(CBLAS_LAYOUT::CblasColMajor, TRANS, M, N, ALPHA, mat.F_mat, LDA, vec.get_ptr(), INCX, BETA, ans.get_ptr(), INCY);
+    } else if constexpr(std::is_same_v<T,double>){
+      CBLAS_TRANSPOSE TRANS = CblasNoTrans;
+      MKL_INT M = m, N = n;
+      MKL_INT LDA = m;
+      double ALPHA = 1;
+      MKL_INT INCX = 1, INCY = 1;
+      double BETA = 1;
+      cblas_dgemv(CBLAS_LAYOUT::CblasColMajor, TRANS, M, N, ALPHA, mat.F_mat, LDA, vec.get_ptr(), INCX, BETA, ans.get_ptr(), INCY);
+#else
     if constexpr(std::is_same_v<T,float>){
       char TRANS = 'N';
       int M = m, N = n;
@@ -424,7 +475,7 @@ public:
       int INCX = 1, INCY = 1;
       float BETA = 1;
       sgemv_(&TRANS, &M, &N, &ALPHA, mat.F_mat, &LDA, vec.get_ptr(), &INCX, &BETA, ans.get_ptr(), &INCY);
-    }else if constexpr(std::is_same_v<T,double>){
+    } else if constexpr(std::is_same_v<T,double>){
       char TRANS = 'N';
       int M = m, N = n;
       int LDA = m;
@@ -432,6 +483,7 @@ public:
       int INCX = 1, INCY = 1;
       double BETA = 1;
       dgemv_(&TRANS, &M, &N, &ALPHA, mat.F_mat, &LDA, vec.get_ptr(), &INCX, &BETA, ans.get_ptr(), &INCY);
+#endif
     }else{
       for (size_t i = 0; i < m; ++i){
         T entry = 0;
@@ -447,17 +499,33 @@ public:
   template<size_t k>
   friend Mat<T,m,k> operator*(const Mat<T,m,n>& mat1, const Mat<T,n,k>& mat2){
     Mat<T,m,k> ans(0);
-
-    char TRANSA = 'N', TRANSB = 'N';
-    int M = m, N = k, K = n;
-    int LDA = m, LDB = n, LDC = m;
-
+#ifdef EWMATH_MKL
     if constexpr(std::is_same_v<T,float>){
+      CBLAS_TRANSPOSE TRANSA = CblasNoTrans, TRANSB = CblasNoTrans;
+      MKL_INT M = m, N = k, K = n;
+      MKL_INT LDA = m, LDB = n, LDC = m;
+      float ALPHA = 1, BETA = 1;
+      cblas_sgemm(CBLAS_LAYOUT::CblasColMajor, TRANSA, TRANSB, M, N, K, ALPHA, mat1.F_mat, LDA, mat2.F_mat, LDB, BETA, ans.F_mat, LDC);
+    } else if constexpr(std::is_same_v<T,double>){
+      CBLAS_TRANSPOSE TRANSA = CblasNoTrans, TRANSB = CblasNoTrans;
+      MKL_INT M = m, N = k, K = n;
+      MKL_INT LDA = m, LDB = n, LDC = m;
+      double ALPHA = 1, BETA = 1;
+      cblas_dgemm(CBLAS_LAYOUT::CblasColMajor, TRANSA, TRANSB, M, N, K, ALPHA, mat1.F_mat, LDA, mat2.F_mat, LDB, BETA, ans.F_mat, LDC);
+#else
+    if constexpr(std::is_same_v<T,float>){
+      char TRANSA = 'N', TRANSB = 'N';
+      int M = m, N = k, K = n;
+      int LDA = m, LDB = n, LDC = m;
       float ALPHA = 1, BETA = 1;
       sgemm_(&TRANSA, &TRANSB, &M, &N, &K, &ALPHA, mat1.F_mat, &LDA, mat2.F_mat, &LDB, &BETA, ans.F_mat, &LDC);
     } else if constexpr(std::is_same_v<T,double>){
+      char TRANSA = 'N', TRANSB = 'N';
+      int M = m, N = k, K = n;
+      int LDA = m, LDB = n, LDC = m;
       double ALPHA = 1, BETA = 1;
       dgemm_(&TRANSA, &TRANSB, &M, &N, &K, &ALPHA, mat1.F_mat, &LDA, mat2.F_mat, &LDB, &BETA, ans.F_mat, &LDC);
+#endif
     } else {
       for (size_t i = 0; i < m; ++i){
         for (size_t j = 0; j < n; ++j){

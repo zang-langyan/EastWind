@@ -15,7 +15,15 @@
 #include <cmath>
 #include <climits>
 
+#ifdef _MSC_BUILD
+#define EWMATH_MKL
+#endif
+
+#ifdef EWMATH_MKL
+#include "mkl.h"
+#else
 #include "EW_Blas.h"
+#endif
 
 #define EW_EPSILON 0.001f
 
@@ -106,7 +114,7 @@ public:
 // ==========================================================================
 //   * IO Stream 
 // ==========================================================================
-  friend std::ostream& operator<<(std::ostream& os, Vec<T,n>& v){
+  friend std::ostream& operator<<(std::ostream& os, const Vec<T,n>& v){
     os << "Vec<" << n << ">" << std::endl;
     os << "[";
     for (size_t i = 0; i < n; ++i){
@@ -117,7 +125,7 @@ public:
     return os;
   }
 
-  friend std::ostream& operator<<(std::ostream& os, Vec<T,n>&& v){
+  friend std::ostream& operator<<(std::ostream& os, const Vec<T,n>&& v){
     os << "Vec<" << n << ">" << std::endl;
     os << "[";
     for (size_t i = 0; i < n; ++i){
@@ -249,6 +257,18 @@ public:
 
 
   T dot(const Vec<T,n>& Vy) const {
+#ifdef EWMATH_MKL
+    if constexpr(std::is_same_v<T,float>){
+      // std::cout << "SINGLE PRECISION .dot" << std::endl;
+      MKL_INT N = n;
+      MKL_INT INCX = 1, INCY = 1;
+      return cblas_sdot(N, v, INCX, Vy.v, INCY);
+    } else if constexpr(std::is_same_v<T,double>){
+      // std::cout << "DOUBLE PRECISION .dot" << std::endl;
+      MKL_INT N = n;
+      MKL_INT INCX = 1, INCY = 1;
+      return cblas_ddot(N, v, INCX, Vy.v, INCY);
+#else
     if constexpr(std::is_same_v<T,float>){
       // std::cout << "SINGLE PRECISION .dot" << std::endl;
       int N = n;
@@ -259,6 +279,7 @@ public:
       int N = n;
       int INCX = 1, INCY = 1;
       return ddot_(&N, v, &INCX, Vy.v, &INCY);
+#endif
     } else {
       // std::cout << "OTHER PRECISION .dot" << std::endl;
       T ans = 0;
@@ -357,6 +378,16 @@ private:
   }
 
   auto _norm2(){
+#ifdef EWMATH_MKL
+    if constexpr(std::is_same_v<T,float>){
+      MKL_INT N = n;
+      MKL_INT INCX = 1;
+      return cblas_snrm2(N, v, INCX);
+    }else if constexpr(std::is_same_v<T, double>){
+      MKL_INT INCX = 1;
+      MKL_INT N = n;
+      return cblas_dnrm2(N, v, INCX);
+#else
     if constexpr(std::is_same_v<T,float>){
       int N = n;
       int INCX = 1;
@@ -365,6 +396,7 @@ private:
       int N = n;
       int INCX = 1;
       return dnrm2_(&N, v, &INCX);
+#endif
     }else{
       long double ans = 0;
       for (size_t i = 0; i < n; ++i){
@@ -413,9 +445,9 @@ public:
   //   int N = n;
   //   int INCX = 1, INCY = 1;
   //   if constexpr(std::is_same_v(T,float)){
-  //     sswap_(&N, v, &INCX, Vy.v, &INCY);
+  //     sswap(&N, v, &INCX, Vy.v, &INCY);
   //   }else if constexpr(std::is_same_v(T,double)){
-  //     dswap_()
+  //     dswap()
   //   }
   // }
  

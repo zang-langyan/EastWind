@@ -12,6 +12,14 @@ endif()
 
 file(GLOB_RECURSE EW_SRC ${PROJECT_SOURCE_DIR}/src/*cpp)
 
+if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU") 
+  list(REMOVE_ITEM EW_SRC
+    ${PROJECT_SOURCE_DIR}/src/Physix/Physics.cpp
+    ${PROJECT_SOURCE_DIR}/src/Physix/PhysixSDK/Bullet/Bullet.cpp
+  )
+  message("EastWind Source Files: ${EW_SRC}")
+endif()
+
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/src/Event)
 
@@ -68,11 +76,13 @@ add_subdirectory(${ASSIMP_DIR})
 target_link_libraries(EastWind assimp)
 
 #[[ bullet3 ]]
-set(BULLET3_DIR ${PROJECT_SOURCE_DIR}/vendor/bullet3)
-target_include_directories(EastWind PUBLIC ${BULLET3_DIR}/src)
-include(${BULLET3_DIR}/UseBullet.cmake)
-add_subdirectory(${BULLET3_DIR})
-target_link_libraries(EastWind BulletDynamics BulletCollision LinearMath)
+if (NOT (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")) 
+  set(BULLET3_DIR ${PROJECT_SOURCE_DIR}/vendor/bullet3)
+  target_include_directories(EastWind PUBLIC ${BULLET3_DIR}/src)
+  include(${BULLET3_DIR}/UseBullet.cmake)
+  add_subdirectory(${BULLET3_DIR})
+  target_link_libraries(EastWind BulletDynamics BulletCollision LinearMath)
+endif()
 
 #[[ gflags ]]
 set(GFLAGS_DIR ${PROJECT_SOURCE_DIR}/vendor/gflags)

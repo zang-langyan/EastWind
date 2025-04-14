@@ -89,7 +89,7 @@ namespace EastWind {
 
   inline Vec<float,3> Quaternion::GetVector() const
   {
-    return (float[3]){x,y,z};
+    return {x,y,z};
   }
 
   // operators

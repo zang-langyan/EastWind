@@ -27,6 +27,13 @@ namespace EastWind {
     EW_CORE_TRACE(glGetString(GL_VERSION));
   }
 
+  void OpenGLContext::MakeCurrentContext() {
+    glfwMakeContextCurrent(m_windowHandle);
+  }
+
+  void OpenGLContext::MakeNonCurrentContext() {
+    glfwMakeContextCurrent(NULL);
+  }
 
   void OpenGLContext::SwapBuffers()
   {

@@ -2,4 +2,6 @@
 .vscode/
 .cache/
 build/
+build_vs/
+build_make/
 imgui.ini

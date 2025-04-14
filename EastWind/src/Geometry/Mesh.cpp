@@ -18,7 +18,7 @@ namespace EastWind {
       { EastWind::ShaderDataType::Float3, "aNormal" },
     };
     const int n_vertices = m_MeshData->vertices.size();
-    float vertices[n_vertices*6];
+    float* vertices = new float[n_vertices*6];
     for (int i = 0; i < n_vertices; ++i){
       vertices[i*6]   = m_MeshData->vertices[i]->position(0);
       vertices[i*6+1] = m_MeshData->vertices[i]->position(1);
@@ -31,20 +31,24 @@ namespace EastWind {
       vertices[i*6+4] = m_MeshData->vertices[i]->vnormal(1);
       vertices[i*6+5] = m_MeshData->vertices[i]->vnormal(2);
     }
-    vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+    // vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+    vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(float) * n_vertices * 6));
+    // EW_CORE_ERROR("sizeof(vertices): " << sizeof(vertices));
     vertexBuffer->SetLayout(layout);
     m_BufferState->AddVertexBuffer(vertexBuffer);
 
     // Index Buffer
     Ref<IndexBuffer> indexBuffer;
     const int n_indices = m_MeshData->faces.size();
-    uint32_t indices[n_indices*3];
+    uint32_t* indices =  new uint32_t[n_indices*3];
     for (int i = 0; i < n_indices; ++i){
       indices[i*3]   = m_MeshData->faces[i]->indices(0);
       indices[i*3+1] = m_MeshData->faces[i]->indices(1);
       indices[i*3+2] = m_MeshData->faces[i]->indices(2);
     }
-    indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
+    // indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
+    indexBuffer.reset(IndexBuffer::Create(indices, n_indices * 3));
+    // EW_CORE_ERROR("sizeof(indices): " << sizeof(indices));
     m_BufferState->SetIndexBuffer(indexBuffer);
   }
 

@@ -15,6 +15,7 @@
 #define EW_LAPACK_H
 
 
+#ifndef EWMATH_MKL
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -82,5 +83,5 @@ double dlapy3_(double* x, double* y, double* z);
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-
+#endif // EWMATH_MKL
 #endif // !EW_LAPACK_H

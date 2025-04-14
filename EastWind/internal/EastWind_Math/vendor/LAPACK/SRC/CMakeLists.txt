@@ -537,6 +537,14 @@ set_target_properties(
   SOVERSION ${LAPACK_MAJOR_VERSION}
   )
 
+find_library(GFORTRAN_LIB libgfortran.a)
+find_library(QUADMATH_LIB libquadmath.a)
+find_library(GCC_LIB libgcc.a)
+target_link_libraries(${LAPACKLIB} PUBLIC ${GFORTRAN_LIB})
+target_link_libraries(${LAPACKLIB} PUBLIC ${QUADMATH_LIB})
+target_link_libraries(${LAPACKLIB} PUBLIC ${GCC_LIB})
+target_link_libraries(${LAPACKLIB} PUBLIC blas)
+
 if( TEST_FORTRAN_COMPILER )
   add_dependencies( ${LAPACKLIB} run_test_zcomplexabs run_test_zcomplexdiv run_test_zcomplexmult run_test_zminMax )
 endif()
