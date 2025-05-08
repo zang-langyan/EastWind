@@ -7,3 +7,6 @@
 [submodule "EastWind/vendor/gflags"]
 	path = EastWind/vendor/gflags
 	url = https://github.com/gflags/gflags.git
+[submodule "Sandbox/vendor/yaml-cpp"]
+	path = Sandbox/vendor/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git

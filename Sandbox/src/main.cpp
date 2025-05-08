@@ -1,5 +1,6 @@
 #include <EastWind.h>
 
+#include "ConfigManager.h"
 #include "SandBoxApp.hpp"
 
 EastWind::App* EastWind::CreateApp()
@@ -11,6 +12,9 @@ EastWind::App* EastWind::CreateApp()
 int main(int argc, char** argv)
 {
   EW_INFO("Welcome to EastWind!");
+
+  // Read Configs
+  ConfigManager::global_instance().read_yaml_config("resource_cfg", "./config/resource.yaml");
 
   EastWind::App* app = EastWind::CreateApp();
   EW_WARN("App Initializing!");

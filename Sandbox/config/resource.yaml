@@ -1,0 +1,18 @@
+shaders:
+  - name: "Basic_Shader"
+    path: "./assets/shaders/basic_shader.glsl"
+  - name: "Basic_Texture_Shader"
+    path: "./assets/shaders/basic_texture_shader.glsl"
+  - name: "Texture_Shader"
+    path: "./assets/shaders/texture_shader.glsl"
+meshes:
+  # - name: "bunny"
+  #   path: "./assets/meshes/bunny_nf4000.noff"
+  # - name: "dragon"
+  #   path: "./assets/meshes/Chinese_Dragon.stl"
+  # - name: "dragon_1"
+  #   path: "./assets/meshes/Dragon_1.obj"
+  # - name: "dragon_2"
+  #   path: "./assets/meshes/Dragon_2.obj"
+  - name: "heart"
+    path: "./assets/meshes/HumanHeart_FBX.fbx"

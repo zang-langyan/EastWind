@@ -8,6 +8,7 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Texture.h"
+#include "Scene/Scene.h"
 
 namespace EastWind {
 
@@ -22,6 +23,10 @@ struct Vertex {
   Id vid;
   Vec3 position;
   Vec3 vnormal;
+  Vec3 vtangent;
+  Vec3 vbitangent;
+  Vec4 vcolor;
+  Vec3 vtexCoord;
   std::vector<HalfEdge*> vhes;
 };
 
@@ -35,7 +40,7 @@ struct Edge {
 
 struct Face {
   Id fid;
-  Vec<int,3> indices;
+  Vec<unsigned int,3> indices;
   Vertex* fv_a;
   Vertex* fv_b;
   Vertex* fv_c;
@@ -45,6 +50,10 @@ struct Face {
   HalfEdge* fhe_c;
 
   bool contain(const Vec3& p) const {
+    if (!fv_a || !fv_b || !fv_c){
+      EW_FATAL("Face does not contain Vertex*");
+      return false;
+    }
     float s1 = (p - fv_a->position) * (fv_b->position - fv_a->position);
     float s2 = (p - fv_b->position) * (fv_c->position - fv_b->position);
     float s3 = (p - fv_c->position) * (fv_a->position - fv_c->position);
@@ -64,6 +73,7 @@ struct HalfEdge{
 };
 
 class Ray;
+class Scene;
 
 struct MeshData {
   std::vector<Vertex*> vertices;
@@ -89,12 +99,13 @@ public:
 public:
   inline void AddVertex(Vec3 vert);
   inline void AddVertex(Vec3 vert, Vec3 normal);
-  inline void AddFace(Vec<int,3> face);
+  void AddFace(Vec<unsigned int,3> face);
 
   void BuildBuffer();
 
 protected:
   friend Ray;
+  friend Scene;
   Ref<BufferState> m_BufferState;
   Ref<MeshData> m_MeshData;
   

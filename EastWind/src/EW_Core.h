@@ -15,7 +15,7 @@
 // #define EW_ENABLE_ASSERTS
 
 #ifdef EW_ENABLE_ASSERTS
-  #define EW_ASSERT(x, ...) {if (!(x)) {EW_ERROR("Assertion Failed"+__VA_ARGS__); __builtin_debugtrap();}}
+  #define EW_ASSERT(x, ...) {if (!(x)) {EW_ERROR("Assertion Failed: "+ __VA_ARGS__); __builtin_debugtrap();}}
 #else
   #define EW_ASSERT(x, ...)
 #endif

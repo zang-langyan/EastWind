@@ -185,7 +185,7 @@ namespace EastWind {
       { EastWind::ShaderDataType::Float2, "aTexCoord" },
     };
     
-    vertexBuffer.reset(VertexBuffer::Create(vertices.data(), sizeof(vertices.data())));
+    vertexBuffer.reset(VertexBuffer::Create(vertices.data(), sizeof(float) * vertices.size()));
     vertexBuffer->SetLayout(layout);
     m_BufferState->AddVertexBuffer(vertexBuffer);
 

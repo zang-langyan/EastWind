@@ -5,3 +5,6 @@ build/
 build_vs/
 build_make/
 imgui.ini
+Sandbox/assets/meshes/*.stl
+Sandbox/assets/meshes/*.obj
+Sandbox/assets/meshes/*.fbx

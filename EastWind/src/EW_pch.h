@@ -5,6 +5,10 @@
 #include <Windows.h>
 #endif
 
+#ifndef GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_NONE
+#endif
+
 #include <iostream>
 #include <memory>
 #include <utility>

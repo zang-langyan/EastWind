@@ -10,7 +10,9 @@ set(
 
 include_directories(${PROJECT_SOURCE_DIR})
 
-
+# [[ Yaml ]]
+set(YAML_DIR ${PROJECT_SOURCE_DIR}/vendor/yaml-cpp)
+add_subdirectory(${YAML_DIR})
 
 #[[ ImGui ]]
 set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/vendor/imgui)
@@ -47,7 +49,28 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_DIR})
 target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_DIR}/backends)
 target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
 
+#[[ YAML ]]
+target_include_directories(${PROJECT_NAME} PUBLIC ${YAML_DIR}/include)
+target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp::yaml-cpp)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/debug)
+
+
+# ===================================
+# Configuration Folder
+# ===================================
+add_custom_target(copy_configurations
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${PROJECT_SOURCE_DIR}/config ${CMAKE_CURRENT_BINARY_DIR}/config
+)
+add_dependencies(${PROJECT_NAME} copy_configurations)
+
+
+# ===================================
+# Asset Folder
+# ===================================
+add_custom_target(copy_assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${PROJECT_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/assets
+)
+add_dependencies(${PROJECT_NAME} copy_assets)
 
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

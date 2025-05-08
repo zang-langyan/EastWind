@@ -9,8 +9,6 @@ namespace EastWind {
 
   void Mesh::BuildBuffer()
   {
-    m_BufferState = EastWind::BufferState::Create();
-
     // Vertex Buffer
     Ref<VertexBuffer> vertexBuffer;
     BufferLayout layout = {
@@ -20,6 +18,9 @@ namespace EastWind {
     const int n_vertices = m_MeshData->vertices.size();
     float* vertices = new float[n_vertices*6];
     for (int i = 0; i < n_vertices; ++i){
+      if (i == 0) {
+        EW_CORE_ERROR("Position[0]" << m_MeshData->vertices[i]->position);
+      }
       vertices[i*6]   = m_MeshData->vertices[i]->position(0);
       vertices[i*6+1] = m_MeshData->vertices[i]->position(1);
       vertices[i*6+2] = m_MeshData->vertices[i]->position(2);
@@ -54,6 +55,9 @@ namespace EastWind {
 
   Mesh::Mesh()
   {
+    m_BufferState = EastWind::BufferState::Create();
+    MeshData data;
+    m_MeshData = std::make_shared<MeshData>(data);
   }
 
   Mesh::Mesh(const std::string& OFF_FilePath)
@@ -69,6 +73,7 @@ namespace EastWind {
     m_MeshData = std::make_shared<MeshData>(data);
     // m_MeshData.reset(&data);
 
+    m_BufferState = EastWind::BufferState::Create();
     {
       BuildBuffer();
     }
@@ -91,7 +96,7 @@ namespace EastWind {
     m_MeshData->vertices.push_back(v);
   }
 
-  inline void Mesh::AddFace(Vec<int,3> face)
+  inline void Mesh::AddFace(Vec<unsigned int,3> face)
   {
       Face* fc = new Face;
       fc->fid = m_MeshData->faces.size();
@@ -174,13 +179,13 @@ namespace EastWind {
   void Mesh::ReadFaceList(MeshData& data, const int& n_face, std::ifstream& fs)
   {
     std::string line;
-    int face_size, a, b, c;
+    unsigned int face_size, a, b, c;
     for (int i = 0; i < n_face && std::getline(fs, line); ++i){
       std::stringstream ss(line);
       ss >> face_size >> a >> b >> c;
       Face* fc = new Face;
       fc->fid = i;
-      fc->indices = Vec<int,3>({a,b,c});
+      fc->indices = Vec<unsigned int,3>({a,b,c});
       fc->fv_a = data.vertices[a];
       fc->fv_b = data.vertices[b];
       fc->fv_c = data.vertices[c];

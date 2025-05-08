@@ -5,23 +5,32 @@
 
 namespace EastWind {
 
+class Mesh;
+
 class Scene
 {
 public:
-  Scene();
-  ~Scene();
+  void AddMeshes(const Mesh& mesh) { m_meshes.emplace_back(mesh); }
+  std::vector<Mesh>& GetMeshes() { return m_meshes; }
 
-  void AddStaticMeshes(const Mesh& mesh) { m_static_meshes.push_back(mesh); }
-  std::vector<Mesh>& GetStaticMeshes() { return m_static_meshes; }
-
-  void AddDynamicMeshes(const Mesh& mesh) { m_dynamic_meshes.push_back(mesh); }
-  std::vector<Mesh>& GetDynamicMeshes() { return m_dynamic_meshes; }
-private:
   static bool AssImp_Read(const std::string& path, Scene& scene);
 
 private:
-  std::vector<Mesh> m_static_meshes;
-  std::vector<Mesh> m_dynamic_meshes;
+  std::vector<Mesh> m_meshes;
+};
+
+
+class SceneManager {
+public:
+    static SceneManager& instance() {
+        static SceneManager ins;
+        return ins;
+    }
+
+    void AddScene(const Scene& scene) { m_scenes.emplace_back(scene); }
+    std::vector<Scene>& GetScenes() { return m_scenes; }
+private:
+    std::vector<Scene> m_scenes;
 };
 
 }

@@ -4,6 +4,7 @@
 #include <EastWind_Graphics.h>
 #include <cmath>
 
+#include <yaml-cpp/yaml.h>
 
 class MeshLayer: public EastWind::Layer
 {
@@ -15,14 +16,35 @@ public:
       r(r),g(g),b(b)
   {
     EW_WARN("Rabbit mesh path: " << RABBIT_OFF_FILE_PATH);
-    auto scale_mat = EastWind::Mat4(5.f);
+    auto scale_mat = EastWind::Mat4(.3f);
     scale_mat(3,3) = 1.f;
     auto trans_mat = EastWind::translate(EastWind::Vec3({0.f,0.f,-1.f}));
-    auto model_mat = scale_mat * trans_mat;
+    auto rot_mat = EastWind::rotateX(-PI / 2.f) * EastWind::rotateY(-PI / 2.f) * EastWind::rotateZ(-PI / 6.f) ;
+    auto model_mat = scale_mat * trans_mat * rot_mat;
     m_plane.SetModelMatrix(model_mat);
     EW_ERROR(model_mat);
 
     m_sphere.SetModelMatrix(trans_mat);
+
+    // load shaders
+    YAML::Node& resource_cfg = ConfigManager::global_instance().get_config_by_name("resource_cfg");
+    for (int i = 0; i < resource_cfg["shaders"].size(); ++i) {
+      const std::string& name = resource_cfg["shaders"][i]["name"].as<std::string>();
+      const std::string& path = resource_cfg["shaders"][i]["path"].as<std::string>();
+      EastWind::Ref<EastWind::Shader> shader = EastWind::Shader::Create(path);
+      EastWind::ShaderLibrary::instance().Add(name, shader);
+    }
+
+    for (int i = 0; i < resource_cfg["meshes"].size(); ++i) {
+      // const std::string& name = resource_cfg["meshes"][i]["name"].as<std::string>();
+      const std::string& path = resource_cfg["meshes"][i]["path"].as<std::string>();
+      EastWind::Scene scene;
+      EastWind::Scene::AssImp_Read(path, scene);
+      for (auto& mesh : scene.GetMeshes()) {
+        mesh.SetModelMatrix(model_mat);
+      }
+      EastWind::SceneManager::instance().AddScene(scene);
+    }
   }
 
   void OnUpdate(EastWind::Timestep ts) override
@@ -82,14 +104,14 @@ public:
     // m_skydome.Draw();
     EastWind::Renderer::DepthTest(true);
     EastWind::Renderer::CullFace(false);
-    if (EastWind::Input::GetCursorRay().Hit(m_rabbit)) {
-      EW_ERROR("Hitting Rabbit Object");
-      m_rabbit.SetActiveShader("BasicTextureShader");
-      m_rabbit.Draw(EastWind::Renderer::PrimitiveType::Line);
-    } else {
-      m_rabbit.SetActiveShader("BasicShader");
-      m_rabbit.Draw();
-    }
+    // if (EastWind::Input::GetCursorRay().Hit(m_rabbit)) {
+    //   EW_ERROR("Hitting Rabbit Object");
+    //   m_rabbit.SetActiveShader("BasicTextureShader");
+    //   m_rabbit.Draw(EastWind::Renderer::PrimitiveType::Line);
+    // } else {
+    //   m_rabbit.SetActiveShader("BasicShader");
+    //   m_rabbit.Draw();
+    // }
     // m_sphere.SetActiveShader("BasicShader");
     // if (EastWind::Input::GetCursorRay().Hit(m_sphere)) {
     //   EW_ERROR("Hitting Sphere Object");
@@ -99,9 +121,15 @@ public:
     //   m_sphere.SetActiveShader("BasicShader");
     //   m_sphere.Draw();
     // }
-    m_sphere.Draw();
+    // m_sphere.Draw();
     // m_cube.Draw();
-    m_plane.Draw();
+    // m_plane.Draw();
+
+    for (auto& scene : EastWind::SceneManager::instance().GetScenes()) {
+      for (auto& mesh : scene.GetMeshes()) {
+        mesh.Draw();
+      }
+    }
 
     EastWind::Renderer::EndScene();
     // --------- Scene End ---------
