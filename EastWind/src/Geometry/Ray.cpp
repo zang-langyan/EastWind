@@ -20,6 +20,7 @@ namespace EastWind {
 
   bool Ray::Hit(const Mesh& mesh) const
   {
+    // TODO: Parallel Computing
     for (Face* f : mesh.m_MeshData->faces) {
       if (Hit(f)) {
         return true;

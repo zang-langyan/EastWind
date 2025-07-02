@@ -101,12 +101,19 @@ public:
   inline void AddVertex(Vec3 vert, Vec3 normal);
   void AddFace(Vec<unsigned int,3> face);
 
-  void BuildBuffer();
-
+public:
+  virtual void BuildBuffer();
+  void SetBufferLayout(const BufferLayout& layout) { m_BufferLayout = layout; }
+  void SetBufferLayout(const std::initializer_list<BufferElement>& elements) { m_BufferLayout = elements; }
+  const BufferLayout& GetBufferLayout() { return m_BufferLayout; }
 protected:
   friend Ray;
   friend Scene;
+
+protected:
   Ref<BufferState> m_BufferState;
+  BufferLayout m_BufferLayout;
+
   Ref<MeshData> m_MeshData;
   
   std::string m_ActiveShader = "BasicShader";

@@ -28,17 +28,13 @@ public:
 
     const CameraController& camera_controller = CameraController::instance();
     const Camera& cam = camera_controller.GetCamera();
-    Vec<float, 6> cam_boundary = cam.GetBoundary();
-    // EW_WARN("Camera Boundary: " << cam_boundary);
-    float l = cam_boundary(0), r = cam_boundary(1), 
-          t = cam_boundary(2), b = cam_boundary(3),
-          n = cam_boundary(4), f = cam_boundary(5);
-    float x_half = (l - r) / 2.f, y_half = (t - b) / 2.f;
-    Vec4 start{ndc_x, ndc_y, -n, 1};
-    start *= -(2.f*f*n)/(f-n);
+    float n = cam.GetBoundary()(4);
+
+    Vec4 start = cam.GetPosition();
+    Vec4 dest{n*ndc_x, n*ndc_y, -n, n}; 
     Mat4 vp_inverse = cam.GetViewProjectionMatrix().Inverse();
-    start = vp_inverse * start;
-    return Ray(start, -cam.GetDirection());
+    dest = vp_inverse * dest;
+    return Ray(start, dest-start);
   }
 
 protected:

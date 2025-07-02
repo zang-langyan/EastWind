@@ -107,6 +107,7 @@ public:
     // if (EastWind::Input::GetCursorRay().Hit(m_rabbit)) {
     //   EW_ERROR("Hitting Rabbit Object");
     //   m_rabbit.SetActiveShader("BasicTextureShader");
+    //   // m_rabbit.SetActiveShader("BasicShader");
     //   m_rabbit.Draw(EastWind::Renderer::PrimitiveType::Line);
     // } else {
     //   m_rabbit.SetActiveShader("BasicShader");
@@ -127,7 +128,16 @@ public:
 
     for (auto& scene : EastWind::SceneManager::instance().GetScenes()) {
       for (auto& mesh : scene.GetMeshes()) {
-        mesh.Draw();
+        if (EastWind::Input::GetCursorRay().Hit(m_rabbit)) {
+          EW_ERROR("hit mesh Object");
+          // mesh.SetActiveShader("BasicTextureShader");
+          // m_rabbit.SetActiveShader("BasicShader");
+          mesh.Draw(EastWind::Renderer::PrimitiveType::Line);
+        } else {
+          // mesh.SetActiveShader("BasicShader");
+          mesh.Draw();
+        }
+        // mesh.Draw();
       }
     }
 

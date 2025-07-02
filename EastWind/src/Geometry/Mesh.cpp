@@ -7,36 +7,44 @@
 
 namespace EastWind {
 
+  static const BufferLayout DEFAULT_LAYOUT = {
+    { EastWind::ShaderDataType::Float3, "vPos"    },
+    { EastWind::ShaderDataType::Float3, "vNormal" },
+    { EastWind::ShaderDataType::Float3, "vTangent" },
+    { EastWind::ShaderDataType::Float4, "vColor" },
+  };
+
   void Mesh::BuildBuffer()
   {
     // Vertex Buffer
     Ref<VertexBuffer> vertexBuffer;
-    BufferLayout layout = {
-      { EastWind::ShaderDataType::Float3, "aPos"    },
-      { EastWind::ShaderDataType::Float3, "aNormal" },
-    };
     const int n_vertices = m_MeshData->vertices.size();
-    float* vertices = new float[n_vertices*6];
+    constexpr int size_per_vertex = 3 + 3 + 3 + 4;
+    float* vertices = new float[n_vertices * size_per_vertex];
     for (int i = 0; i < n_vertices; ++i){
-      if (i == 0) {
-        EW_CORE_ERROR("Position[0]" << m_MeshData->vertices[i]->position);
-      }
-      vertices[i*6]   = m_MeshData->vertices[i]->position(0);
-      vertices[i*6+1] = m_MeshData->vertices[i]->position(1);
-      vertices[i*6+2] = m_MeshData->vertices[i]->position(2);
+      vertices[i*size_per_vertex]   = m_MeshData->vertices[i]->position(0);
+      vertices[i*size_per_vertex+1] = m_MeshData->vertices[i]->position(1);
+      vertices[i*size_per_vertex+2] = m_MeshData->vertices[i]->position(2);
 
-      // vertices[i*6]   = m_MeshData->vertices[i]->position(0)*10;
-      // vertices[i*6+1] = m_MeshData->vertices[i]->position(1)*10;
-      // vertices[i*6+2] = m_MeshData->vertices[i]->position(2)*10;
-      vertices[i*6+3] = m_MeshData->vertices[i]->vnormal(0);
-      vertices[i*6+4] = m_MeshData->vertices[i]->vnormal(1);
-      vertices[i*6+5] = m_MeshData->vertices[i]->vnormal(2);
+      vertices[i*size_per_vertex+3] = m_MeshData->vertices[i]->vnormal(0);
+      vertices[i*size_per_vertex+4] = m_MeshData->vertices[i]->vnormal(1);
+      vertices[i*size_per_vertex+5] = m_MeshData->vertices[i]->vnormal(2);
+
+      vertices[i*size_per_vertex+6] = m_MeshData->vertices[i]->vtangent(0);
+      vertices[i*size_per_vertex+7] = m_MeshData->vertices[i]->vtangent(1);
+      vertices[i*size_per_vertex+8] = m_MeshData->vertices[i]->vtangent(2);
+
+      vertices[i*size_per_vertex+9]  = m_MeshData->vertices[i]->vcolor(0);
+      vertices[i*size_per_vertex+10] = m_MeshData->vertices[i]->vcolor(1);
+      vertices[i*size_per_vertex+11] = m_MeshData->vertices[i]->vcolor(2);
+      vertices[i*size_per_vertex+12] = m_MeshData->vertices[i]->vcolor(3);
     }
     // vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-    vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(float) * n_vertices * 6));
+    vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(float) * n_vertices * size_per_vertex));
     // EW_CORE_ERROR("sizeof(vertices): " << sizeof(vertices));
-    vertexBuffer->SetLayout(layout);
+    vertexBuffer->SetLayout(m_BufferLayout);
     m_BufferState->AddVertexBuffer(vertexBuffer);
+    // delete[] vertices;
 
     // Index Buffer
     Ref<IndexBuffer> indexBuffer;
@@ -51,13 +59,17 @@ namespace EastWind {
     indexBuffer.reset(IndexBuffer::Create(indices, n_indices * 3));
     // EW_CORE_ERROR("sizeof(indices): " << sizeof(indices));
     m_BufferState->SetIndexBuffer(indexBuffer);
+    // delete[] indices;
   }
 
   Mesh::Mesh()
   {
-    m_BufferState = EastWind::BufferState::Create();
     MeshData data;
     m_MeshData = std::make_shared<MeshData>(data);
+    
+    m_BufferLayout = DEFAULT_LAYOUT;
+
+    m_BufferState = EastWind::BufferState::Create();
   }
 
   Mesh::Mesh(const std::string& OFF_FilePath)
@@ -73,7 +85,11 @@ namespace EastWind {
     m_MeshData = std::make_shared<MeshData>(data);
     // m_MeshData.reset(&data);
 
+
     m_BufferState = EastWind::BufferState::Create();
+
+    m_BufferLayout = DEFAULT_LAYOUT;
+
     {
       BuildBuffer();
     }
@@ -156,7 +172,7 @@ namespace EastWind {
       ss >> x >> y >> z;
       Vertex* v = new Vertex;
       v->vid = i;
-      v->position = Vec3({x, -z, y});
+      v->position = Vec3({x, y, z});
       data.vertices.push_back(v);
     }
   }
@@ -170,7 +186,7 @@ namespace EastWind {
       ss >> x >> y >> z >> nx >> ny >> nz;
       Vertex* v = new Vertex;
       v->vid = i;
-      v->position = Vec3({x, -z, y}) * 10.f;
+      v->position = Vec3({x, y, z})*10.f;
       v->vnormal = Vec3({nx, ny, nz});
       data.vertices.push_back(v);
     }
