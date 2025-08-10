@@ -24,6 +24,7 @@ public:
   static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 
   virtual int reload() = 0;
+  virtual bool need_reload() { return false; }
 };
 
 class ShaderLibrary
@@ -66,7 +67,26 @@ public:
 
   int reload() {
     for (auto&& [shader_name, shader_ptr] : m_Shaders) {
+      if (!shader_ptr->need_reload()) {
+        continue;
+      }
+      /* Lock Context */
+      std::unique_lock<std::mutex> context_switch_lck(ReloadManager::instance().get_context_switch_mtx());
+      ReloadManager::instance().get_context_switch_cv().wait(
+        context_switch_lck, 
+        [&]{return !ReloadManager::instance().get_main_thread_context_ready();}
+      );
+      ReloadManager::instance().set_side_thread_context_sleep(false);
+
+      ReloadManager::instance().get_App()->GetWindow().GetGraphicsContext()->MakeCurrentContext();
       int ret = shader_ptr->reload();
+      ReloadManager::instance().get_App()->GetWindow().GetGraphicsContext()->MakeNonCurrentContext();
+      
+      /* Unlock Context */
+      ReloadManager::instance().set_main_thread_context_ready(true);
+      ReloadManager::instance().set_side_thread_context_sleep(true);
+      ReloadManager::instance().get_context_switch_cv().notify_one();
+      
       if (ret != 0) {
         return ret;
       }

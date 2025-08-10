@@ -8,13 +8,12 @@
 #include "imgui_impl_opengl3.h"
 
 #include <GLFW/glfw3.h>
-
+#include "ClearLayer.h"
 
 class ImGuiLayer: public EastWind::Layer 
 {
 public:
-  ImGuiLayer(float* r, float* g, float* b)
-    :r(r),g(g),b(b)
+  ImGuiLayer()
   {
 
   }
@@ -81,15 +80,16 @@ public:
     ImGui::ShowDemoWindow(); // Show demo window! :)
 
     {
-      ImVec4 clear_color = ImVec4(*r, *g, *b, 1.00f);
+      ImVec4 clear_color = ImVec4(ClearLayer::r, ClearLayer::g, ClearLayer::b, ClearLayer::a);
       ImGui::Begin("Setup");
 
       // Edit a color stored as 4 floats
       ImGui::ColorEdit4("Background Color", (float*)&clear_color);
 
-      *r = clear_color.x;
-      *g = clear_color.y;
-      *b = clear_color.z;
+      ClearLayer::r = clear_color.x;
+      ClearLayer::g = clear_color.y;
+      ClearLayer::b = clear_color.z;
+      ClearLayer::a = clear_color.w;
 
       auto cursor_pos = EastWind::Input::GetMousePosition();
       ImGui::Text("Cursor Position");
@@ -139,7 +139,7 @@ public:
 
 private:
   float m_time = 0.f;
-  float *r, *g, *b;
+  // float *r, *g, *b, *a;
   uint32_t window_width = 1280, window_height = 720;
 
 // private:

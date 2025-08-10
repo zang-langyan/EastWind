@@ -70,6 +70,7 @@ private:
 
   struct SceneData {
     Mat<float,4,4> VPMatrix;
+    Camera camera;
   };
 
   static SceneData* m_SceneData;

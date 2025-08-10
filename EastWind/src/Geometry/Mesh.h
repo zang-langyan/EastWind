@@ -77,8 +77,9 @@ class Scene;
 
 struct MeshData {
   std::vector<Vertex*> vertices;
-  std::vector<Edge*> edges;
   std::vector<Face*> faces;
+  std::vector<Edge*> edges;
+  std::vector<HalfEdge*> halfedges;
   Vec3 central;
 };
 
@@ -88,24 +89,27 @@ public:
   Mesh();
   Mesh(const std::string& OFF_FilePath);
 
+  /* Mesh Building */
   Ref<MeshData> GetMeshData() { return m_MeshData; }
-
+  void AddVertex(Vec3 vert);
+  void AddVertex(Vec3 vert, Vec3 normal);
+  void AddFace(Vec<unsigned int,3> face);
+  
+  /* Renderer Functions */
   virtual void Draw(Renderer::PrimitiveType primitive_type = Renderer::PrimitiveType::Triangle);
   void SetModelMatrix(const Mat4& modelmat);
-
   void SetActiveShader(const std::string& name);
   Ref<Shader> GetActiveShader() { return ShaderLibrary::instance().Get(m_ActiveShader); }
-
-public:
-  inline void AddVertex(Vec3 vert);
-  inline void AddVertex(Vec3 vert, Vec3 normal);
-  void AddFace(Vec<unsigned int,3> face);
-
-public:
+  
+  /* Buffer Building */
   virtual void BuildBuffer();
   void SetBufferLayout(const BufferLayout& layout) { m_BufferLayout = layout; }
   void SetBufferLayout(const std::initializer_list<BufferElement>& elements) { m_BufferLayout = elements; }
   const BufferLayout& GetBufferLayout() { return m_BufferLayout; }
+
+  /* Mesh Picking */
+  void SetHit(bool hit) { m_ishit = hit; }
+  bool IsHit() const { return m_ishit; }
 protected:
   friend Ray;
   friend Scene;
@@ -121,6 +125,8 @@ protected:
   Mat4 m_ModelMatrix;
   void UploadModelMat();
 
+private:
+  bool m_ishit = false;
 private:
   static bool Read_OFF_File(const std::string& OFF_File_Path, MeshData& data);
   static void ReadVertexList(MeshData& data, const int& n_vertex, std::ifstream& fs);

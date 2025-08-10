@@ -113,36 +113,21 @@ namespace EastWind {
     // when side_thread_context_sleep
     //     * true  -> main thread set current context, reload thread is sleeping or blocked
     //     * false -> reload thread is setting current context, main thread is blocked
-    std::condition_variable context_switch_cv;
-    std::mutex context_switch_mtx;
-    static bool main_thread_context_ready = true;
-    static bool side_thread_context_sleep = true;
-
-    std::condition_variable stop_reload_thrd;
-    std::mutex stop_reload_mtx;
-    std::thread reload_thrd = std::thread(
+    ReloadManager::instance().set_main_thread_context_ready(true);
+    ReloadManager::instance().set_side_thread_context_sleep(true);
+    
+    reload_thrd = std::thread(
       // [&stop_reload_thrd, &stop_reload_mtx](){
       [&](){
         EW_TRACE("Starting ReloadManager Thread...");
+        ReloadManager::instance().set_App(this);
         while (true){
           {
-            // TODO:
-            // set context to when it is necessary to reload the shader
-            std::unique_lock<std::mutex> context_switch_lck(context_switch_mtx);
-            context_switch_cv.wait(context_switch_lck, [&]{return !main_thread_context_ready;});
-            side_thread_context_sleep = false;
-
-            m_window->GetGraphicsContext()->MakeCurrentContext();
             // EW_INFO("ReloadManager Start...");
             if (ReloadManager::instance().reload() != 0) {
               EW_FATAL("ReloadManager reload Failed");
               exit(-1);
             }
-            m_window->GetGraphicsContext()->MakeNonCurrentContext();
-
-            main_thread_context_ready = true;
-            side_thread_context_sleep = true;
-            context_switch_cv.notify_one();
           }
 
           // m_window->GetGraphicsContext()->SwapBuffers();
@@ -163,8 +148,10 @@ namespace EastWind {
 
     while (m_running)
     {
-      std::unique_lock<std::mutex> context_switch_lck(context_switch_mtx);
-      context_switch_cv.wait(context_switch_lck, [&]{return side_thread_context_sleep || main_thread_context_ready;});
+      std::unique_lock<std::mutex> context_switch_lck(ReloadManager::instance().get_context_switch_mtx());
+      ReloadManager::instance().get_context_switch_cv().wait(context_switch_lck, [&]{
+        return ReloadManager::instance().get_side_thread_context_sleep() || ReloadManager::instance().get_main_thread_context_ready();
+      });
       m_window->GetGraphicsContext()->MakeCurrentContext();
   
       float time = glfwGetTime();
@@ -180,8 +167,8 @@ namespace EastWind {
       m_window->OnUpdate();
 
       m_window->GetGraphicsContext()->MakeNonCurrentContext();
-      main_thread_context_ready = false;
-      context_switch_cv.notify_one();
+      ReloadManager::instance().set_main_thread_context_ready(false);
+      ReloadManager::instance().get_context_switch_cv().notify_one();
     }
     stop_reload_thrd.notify_all();
   }

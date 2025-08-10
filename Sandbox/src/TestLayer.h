@@ -7,10 +7,10 @@
 class TestLayer: public EastWind::Layer
 {
 public:
-  TestLayer(float* r, float* g, float* b)
+  TestLayer()
     : Layer("Test"),
       m_Camera(1280.f/720.f),
-      r(r),g(g),b(b),
+      // r(r),g(g),b(b),
       m_width(200), m_height(100)
   {
     m_FrameBuffer = EastWind::FrameBuffer::Create(m_width, m_height);
@@ -180,8 +180,8 @@ public:
       m_ModelMatrix(1,1) = m_ModelMatrix(1,1)-ts >= 0 ? m_ModelMatrix(1,1)-ts : 0;
     }
 
-    EastWind::Renderer::ClearColor({*r, *g, *b, 1.f});
-    EastWind::Renderer::ClearBufferAndDepth();
+    // EastWind::Renderer::ClearColor({*r, *g, *b, 1.f});
+    // EastWind::Renderer::ClearBufferAndDepth();
 
     // m_Camera.SetPosition(EastWind::Vec<float,4>({0.f,0.f,0.f,1.f}));
     // m_Camera.RotateY(EastWind::PI/1800.f);
@@ -246,7 +246,7 @@ private:
   EastWind::CameraController m_Camera;
 
   // Background Color
-  float *r, *g, *b;
+  // float *r, *g, *b;
 
   // Current Mouse Position
   float m_MouseX, m_MouseY;

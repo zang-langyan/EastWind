@@ -149,6 +149,7 @@ namespace EastWind {
         vertices[(j+i*(sectors+1))*8 + 5] = nz;
         vertices[(j+i*(sectors+1))*8 + 6] = 1-s;
         vertices[(j+i*(sectors+1))*8 + 7] = 1-t;
+        AddVertex(Vec3({x, y, z}), Vec3({nx, ny, nz}));// texture coordinates
       }
     }
 
@@ -167,11 +168,13 @@ namespace EastWind {
           indices.push_back(k1);
           indices.push_back(k2);
           indices.push_back(k1+1);
+          AddFace(Vec<unsigned int,3>({k1, k2, k1+1}));
         }
         if (i != stacks-1){
           indices.push_back(k1+1);
           indices.push_back(k2);
           indices.push_back(k2+1);
+          AddFace(Vec<unsigned int,3>({k1+1, k2, k2+1}));
         }
       }
     }

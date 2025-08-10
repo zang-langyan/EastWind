@@ -31,6 +31,7 @@ public:
   virtual const std::string GetName() const override { return m_name; };
 
   virtual int reload() override;
+  virtual bool need_reload() override;
 public:
   void UploadUniformInt(const std::string& name, int value);
 

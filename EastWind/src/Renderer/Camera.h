@@ -25,6 +25,7 @@ struct CamPosture {
 class Camera 
 {
 public:
+  Camera() = default;
   Camera(const Vec<float,3>& position, const Vec<float,3>& up, const Vec<float,3>& direction, const Vec<float,6>& boundary);
 
 

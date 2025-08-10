@@ -4,6 +4,7 @@
 #include "EW_Core.h"
 #include "EW_Log.h"
 #include "Platform/SDK/OpenGL/OpenGLShader.h"
+#include "EW_Input.h"
 
 namespace EastWind {
 
@@ -44,7 +45,7 @@ namespace EastWind {
     // EW_CORE_ERROR("sizeof(vertices): " << sizeof(vertices));
     vertexBuffer->SetLayout(m_BufferLayout);
     m_BufferState->AddVertexBuffer(vertexBuffer);
-    // delete[] vertices;
+    delete[] vertices;
 
     // Index Buffer
     Ref<IndexBuffer> indexBuffer;
@@ -59,7 +60,7 @@ namespace EastWind {
     indexBuffer.reset(IndexBuffer::Create(indices, n_indices * 3));
     // EW_CORE_ERROR("sizeof(indices): " << sizeof(indices));
     m_BufferState->SetIndexBuffer(indexBuffer);
-    // delete[] indices;
+    delete[] indices;
   }
 
   Mesh::Mesh()
@@ -95,7 +96,7 @@ namespace EastWind {
     }
   }
 
-  inline void Mesh::AddVertex(Vec3 vert)
+  void Mesh::AddVertex(Vec3 vert)
   {
     Vertex* v = new Vertex;
     v->vid = m_MeshData->vertices.size();
@@ -103,7 +104,7 @@ namespace EastWind {
     m_MeshData->vertices.push_back(v);
   }
 
-  inline void Mesh::AddVertex(Vec3 vert, Vec3 normal)
+  void Mesh::AddVertex(Vec3 vert, Vec3 normal)
   {
     Vertex* v = new Vertex;
     v->vid = m_MeshData->vertices.size();
@@ -112,14 +113,50 @@ namespace EastWind {
     m_MeshData->vertices.push_back(v);
   }
 
-  inline void Mesh::AddFace(Vec<unsigned int,3> face)
+  void Mesh::AddFace(Vec<unsigned int,3> face)
   {
       Face* fc = new Face;
       fc->fid = m_MeshData->faces.size();
       fc->indices = face;
+      
+      fc->fv_a = m_MeshData->vertices[fc->indices(0)];
+      fc->fv_b = m_MeshData->vertices[fc->indices(1)];
+      fc->fv_c = m_MeshData->vertices[fc->indices(2)];
+      Vec3 ba = fc->fv_b->position - fc->fv_a->position, ca = fc->fv_c->position - fc->fv_a->position;
+      fc->fnormal = ba.cross(ca);
+      fc->fnormal.normalize();
+      
       m_MeshData->faces.push_back(fc);
   }
+  
+  /* Renderer Functions */
+  void Mesh::Draw(Renderer::PrimitiveType primitive_type)
+  {
+    UploadModelMat();
+    Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, primitive_type);
+    // Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Dot);
+    // Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Line);
+    // Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Triangle);
+  }
 
+  void Mesh::SetModelMatrix(const Mat4& modelmat)
+  {
+    m_ModelMatrix = modelmat;
+  }
+
+  void Mesh::UploadModelMat()
+  {
+    ShaderLibrary::instance().Get(m_ActiveShader)->Bind();
+    std::dynamic_pointer_cast<OpenGLShader>(ShaderLibrary::instance().Get(m_ActiveShader))->UploadUniformMat4("u_ModelMatrix", m_ModelMatrix);
+  }
+  
+  void Mesh::SetActiveShader(const std::string& name)
+  {
+    m_ActiveShader = name;
+  }
+
+
+  /* OFF File Reading and Building Functions */
   bool Mesh::Read_OFF_File(const std::string& OFF_File_Path, MeshData& data)
   {
     int n_vertex, n_face, n_edge;
@@ -162,7 +199,6 @@ namespace EastWind {
     return true;
   }
 
-
   void Mesh::ReadVertexList(MeshData& data, const int& n_vertex, std::ifstream& fs)
   {
     std::string line;
@@ -186,7 +222,7 @@ namespace EastWind {
       ss >> x >> y >> z >> nx >> ny >> nz;
       Vertex* v = new Vertex;
       v->vid = i;
-      v->position = Vec3({x, y, z})*10.f;
+      v->position = Vec3({x, y, z});
       v->vnormal = Vec3({nx, ny, nz});
       data.vertices.push_back(v);
     }
@@ -214,32 +250,6 @@ namespace EastWind {
 
   void Mesh::ReadEdgeList(MeshData& data, const int& n_edge)
   {
-  }
-
-  
-  void Mesh::Draw(Renderer::PrimitiveType primitive_type)
-  {
-    UploadModelMat();
-    Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, primitive_type);
-    // Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Dot);
-    // Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Line);
-    // Renderer::Submit(ShaderLibrary::instance().Get(m_ActiveShader), m_BufferState, Renderer::PrimitiveType::Triangle);
-  }
-
-  void Mesh::SetModelMatrix(const Mat4& modelmat)
-  {
-    m_ModelMatrix = modelmat;
-  }
-
-  void Mesh::UploadModelMat()
-  {
-    ShaderLibrary::instance().Get(m_ActiveShader)->Bind();
-    std::dynamic_pointer_cast<OpenGLShader>(ShaderLibrary::instance().Get(m_ActiveShader))->UploadUniformMat4("u_ModelMatrix", m_ModelMatrix);
-  }
-  
-  void Mesh::SetActiveShader(const std::string& name)
-  {
-    m_ActiveShader = name;
   }
 
 }

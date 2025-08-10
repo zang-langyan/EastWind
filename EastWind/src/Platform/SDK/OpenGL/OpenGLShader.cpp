@@ -174,18 +174,22 @@ namespace EastWind {
   }
 
   int OpenGLShader::reload() {
-    if (m_path.empty() || m_md5 == MD5::instance().compute_from_path(m_path)) {
-      EW_ERROR("Shader reload skipped. md5sum: (" << m_path << "): " << m_md5);
-      return 0;
-    }
-    EW_ERROR("Shader reload start. md5sum: (" << m_path << "): " << m_md5);
-    m_md5 = MD5::instance().compute_from_path(m_path);
     std::string source = ReadFile(m_path);
     auto shaderSrc = PreProcess(source);
     Compile(shaderSrc, m_rendererId);
 
-    EW_ERROR("Shader reloaded. md5sum: (" << m_path << "): " << m_md5);
+    EW_INFO("Shader reloaded. md5sum: (" << m_path << "): " << m_md5);
     return 0;
+  }
+
+  bool OpenGLShader::need_reload() {
+    if (m_path.empty() || m_md5 == MD5::instance().compute_from_path(m_path)) {
+      // EW_ERROR("Shader reload skipped. md5sum: (" << m_path << "): " << m_md5);
+      return false;
+    }
+    EW_INFO("Shader reload start. md5sum: (" << m_path << "): " << m_md5);
+    m_md5 = MD5::instance().compute_from_path(m_path);
+    return true;
   }
 
   void OpenGLShader::Bind() const 

@@ -24,17 +24,27 @@ public:
     uint32_t window_width = window.GetWidth();
     uint32_t window_height = window.GetHeight();
     float ndc_x = (mousePosX / window_width ) * 2.f - 1.f;
-    float ndc_y = (mousePosY / window_height) * 2.f - 1.f;
+    float ndc_y = 1.f - (mousePosY / window_height) * 2.f;
 
     const CameraController& camera_controller = CameraController::instance();
     const Camera& cam = camera_controller.GetCamera();
-    float n = cam.GetBoundary()(4);
-
     Vec4 start = cam.GetPosition();
-    Vec4 dest{n*ndc_x, n*ndc_y, -n, n}; 
+    
+    // float n = cam.GetBoundary()(4);
+    // Vec4 dest{n*ndc_x, n*ndc_y, -n, n}; 
+    // Mat4 vp_inverse = cam.GetViewProjectionMatrix().Inverse();
+    // dest = vp_inverse * dest;
+    // dest /= dest(3); // Normalize the homogeneous coordinates
+    // return Ray(start, dest-start);
+    Vec4 near_plane_point{ndc_x, ndc_y, -1.0f, 1.0f};
+    Vec4  far_plane_point{ndc_x, ndc_y,  1.0f, 1.0f};
     Mat4 vp_inverse = cam.GetViewProjectionMatrix().Inverse();
-    dest = vp_inverse * dest;
-    return Ray(start, dest-start);
+    near_plane_point = vp_inverse * near_plane_point;
+    near_plane_point /= near_plane_point(3);
+    far_plane_point = vp_inverse * far_plane_point;
+    far_plane_point /= far_plane_point(3);
+    // Vec3 direction = far_plane_point-near_plane_point;
+    return Ray(start, far_plane_point-near_plane_point);
   }
 
 protected:

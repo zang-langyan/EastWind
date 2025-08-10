@@ -34,6 +34,7 @@ public:
   void SetDirection(const Vec3& d) { m_dir = d; }
 
   bool Hit(const Mesh& mesh) const ;
+  bool Hit(const Mesh* mesh) const ;
   bool Hit(const Face& face) const ;
   bool Hit(const Face* face) const ;
 private:

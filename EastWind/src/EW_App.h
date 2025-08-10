@@ -46,7 +46,12 @@ private:
 
   float m_lastFrameTime = 0.0f;
 
-  static App* s_instance; 
+  static App* s_instance;
+
+private:
+  std::condition_variable stop_reload_thrd;
+  std::mutex stop_reload_mtx;
+  std::thread reload_thrd;
 };
 
 

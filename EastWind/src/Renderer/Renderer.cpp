@@ -70,6 +70,7 @@ namespace EastWind {
   void Renderer::BeginScene(Camera& camera)
   {
     m_SceneData->VPMatrix = camera.GetViewProjectionMatrix();
+    m_SceneData->camera = camera;
   }
   
   void Renderer::EndScene()
@@ -88,7 +89,7 @@ namespace EastWind {
     shader->Bind();
     std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_VPMatrix", m_SceneData->VPMatrix);
     // std::cout << "VPMAT:" << m_SceneData->VPMatrix << std::endl;
-
+    std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformFloat4("u_CamPos", m_SceneData->camera.GetPosition());
     bufferState->Bind();
     s_Renderer->Draw(bufferState, type);
   }
