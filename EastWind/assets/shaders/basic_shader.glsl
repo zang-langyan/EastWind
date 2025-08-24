@@ -81,7 +81,7 @@ void main()
   material.color = vec3(1., 0.2, 0.3);
   material.illumination = 0.01;
 
-  light.position = vec3(5., 0., 0.);
+  light.position = vec3(5., 0., 5.);
   light.ambient = vec3(0.3, 0.2, 0.2);
   // light.diffuse = vec3(0., 0., 20.);
   // light.specular = vec3(0., 0., 20.);

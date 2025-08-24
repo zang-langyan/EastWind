@@ -35,8 +35,8 @@ public:
 
   bool Hit(const Mesh& mesh) const ;
   bool Hit(const Mesh* mesh) const ;
-  bool Hit(const Face& face) const ;
-  bool Hit(const Face* face) const ;
+  bool Hit(const Face& face, const Mat4& modelmat) const ;
+  bool Hit(const Face* face, const Mat4& modelmat) const ;
 private:
   Vec3 m_pos;
   Vec3 m_dir;

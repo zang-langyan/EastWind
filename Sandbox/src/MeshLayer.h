@@ -24,7 +24,7 @@ public:
     m_plane.SetModelMatrix(model_mat);
     EW_ERROR(model_mat);
 
-    m_sphere.SetModelMatrix(trans_mat);
+    // m_sphere.SetModelMatrix(trans_mat);
 
     // load shaders
     YAML::Node& resource_cfg = ConfigManager::global_instance().get_config_by_name("resource_cfg");

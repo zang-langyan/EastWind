@@ -101,12 +101,12 @@ public:
       EastWind::Ray cursor_ray = EastWind::Input::GetCursorRay();
       ImGui::Text("Cursor Ray");
       ImGui::TextColored(ImVec4(0.1f, 0.9f, 0.2f, 1.0f), 
-                        "ray: (%f, %f, %f)", 
+                        "Ray Origin: (%f, %f, %f)", 
                         cursor_ray.GetOrigin()(0),
                         cursor_ray.GetOrigin()(1),
                         cursor_ray.GetOrigin()(2));
       ImGui::TextColored(ImVec4(0.1f, 0.9f, 0.2f, 1.0f), 
-                        "ray dir: (%f, %f, %f)", 
+                        "Ray Direction: (%f, %f, %f)", 
                         cursor_ray.GetDirection()(0),
                         cursor_ray.GetDirection()(1),
                         cursor_ray.GetDirection()(2));

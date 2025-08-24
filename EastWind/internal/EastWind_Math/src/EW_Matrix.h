@@ -274,7 +274,7 @@ public:
 //   * Transpose
 // ==========================================================================
 public:
-  Mat<T,n,m> Trans(){
+  Mat<T,n,m> Trans() {
     Mat<T,n,m> ans;
     for (size_t i = 0; i < m; ++i){
       for (size_t j = 0; j < n; ++j){
@@ -282,6 +282,24 @@ public:
       }
     } 
     return ans;
+  }
+
+  Mat<T,n,m> Transpose() {
+    return Trans();
+  }
+
+  Mat<T,n,m> Trans() const {
+    Mat<T,n,m> ans;
+    for (size_t i = 0; i < m; ++i){
+      for (size_t j = 0; j < n; ++j){
+        ans(j,i) = F_mat[m*j+i];
+      }
+    } 
+    return ans;
+  }
+
+  Mat<T,n,m> Transpose() const {
+    return Trans();
   }
 
 // ==========================================================================
@@ -332,6 +350,39 @@ public:
                 << std::endl;
     } else if (LU.info < 0) {
       std::cout << "the" << -LU.info << "-th argument had an illegal value" << std::endl;
+    }
+  
+    return I;
+  }
+
+  Mat<T,m,n> Inverse() const {
+    static_assert(n == m && "Matrix must be square to compute inverse");
+    Mat<T,m,n> I;
+#ifdef EWMATH_MKL
+    MKL_INT N = n;
+    if constexpr(std::is_same_v<T,float>){
+      I.LU.info = LAPACKE_sgesv(LAPACK_COL_MAJOR, N, N, F_mat, N, I.LU.ipiv, I.F_mat, N);
+    } else if constexpr(std::is_same_v<T,double>){
+      I.LU.info = LAPACKE_dgesv(LAPACK_COL_MAJOR, N, N, F_mat, N, I.LU.ipiv, I.F_mat, N);
+    }
+#else
+    int N = n;
+    for (size_t i = 0; i < m*m; ++i){
+      I.LU.lu[i] = F_mat[i];
+    }
+    if constexpr(std::is_same_v<T,float>){
+      sgesv_(&N, &N, LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &LU.info); 
+    } else if constexpr(std::is_same_v<T,double>){
+      dgesv_(&N, &N, LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &LU.info); 
+    }
+#endif
+    if (I.LU.info > 0){
+      std::cout << "U(" << I.LU.info << "," << I.LU.info << ") is exactly zero.\n The factorization"
+                " has been completed, but the factor U is exactly"
+                " singular, so the solution could not be computed." 
+                << std::endl;
+    } else if (I.LU.info < 0) {
+      std::cout << "the" << -I.LU.info << "-th argument had an illegal value" << std::endl;
     }
   
     return I;

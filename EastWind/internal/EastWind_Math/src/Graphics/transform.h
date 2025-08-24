@@ -65,10 +65,10 @@ namespace EastWind {
 
   inline Mat<float,4,4> cameraRotate(const Vec<float,4>& right, const Vec<float,4>& up, const Vec<float,4>& direction){
     return Mat<float,4,4>({
-      {right(0) ,  right(1),  right(2), 0.f},
-      {up(0)    ,  up(1)   ,  up(2)   , 0.f},
+      {    right(0),     right(1),     right(2), 0.f},
+      {       up(0),        up(1),        up(2), 0.f},
       {direction(0), direction(1), direction(2), 0.f},
-      {0.f      ,  0.f     ,  0.f     , 1.f}
+      {         0.f,          0.f,          0.f, 1.f}
     }); 
   }
 
