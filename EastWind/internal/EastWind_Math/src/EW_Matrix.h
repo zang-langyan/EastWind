@@ -371,9 +371,9 @@ public:
       I.LU.lu[i] = F_mat[i];
     }
     if constexpr(std::is_same_v<T,float>){
-      sgesv_(&N, &N, LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &LU.info); 
+      sgesv_(&N, &N, LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &I.LU.info); 
     } else if constexpr(std::is_same_v<T,double>){
-      dgesv_(&N, &N, LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &LU.info); 
+      dgesv_(&N, &N, LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &I.LU.info); 
     }
 #endif
     if (I.LU.info > 0){
