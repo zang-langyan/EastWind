@@ -30,6 +30,9 @@ public:
   };
 
 public:
+  virtual ~Renderer() = default;
+
+public:
   static void ClearColor(const float (&color)[4]);
   static void ClearBufferAndDepth();
   

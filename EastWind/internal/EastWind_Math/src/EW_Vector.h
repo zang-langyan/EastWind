@@ -14,6 +14,7 @@
 #include <iostream>
 #include <cmath>
 #include <climits>
+#include <vector>
 
 #ifdef _MSC_BUILD
 #define EWMATH_MKL
@@ -63,6 +64,12 @@ public:
   }
 
   Vec(std::initializer_list<T> lst){
+    for (size_t i = 0; i < n; ++i){
+      v[i] = i < lst.size() ? *(lst.begin()+i) : 0;
+    }
+  }
+
+  Vec(std::vector<T> lst){
     for (size_t i = 0; i < n; ++i){
       v[i] = i < lst.size() ? *(lst.begin()+i) : 0;
     }
@@ -161,7 +168,7 @@ public:
 //   * Operators
 // ==========================================================================
   template<typename F>
-  auto operator+(Vec<F,n>& other) const {
+  auto operator+(const Vec<F,n>& other) const {
     Vec<decltype(v[0]+other(0)), n> ans;
     for (size_t i = 0; i < n; ++i){
       ans(i) = v[i]+other(i);
@@ -170,7 +177,7 @@ public:
   }
 
   template<typename F>
-  auto operator+(Vec<F,n>&& other) const {
+  auto operator+(const Vec<F,n>&& other) const {
     Vec<decltype(v[0]+other(0)), n> ans;
     for (size_t i = 0; i < n; ++i){
       ans(i) = v[i]+other(i);
@@ -302,7 +309,7 @@ public:
     return ans;
   }
 
-  Vec<T,n> operator*(const T& x){
+  Vec<T,n> operator*(const T& x) const {
     Vec<T,n> ans;
     for (size_t i = 0; i < n; ++i){
       ans(i) = v[i]*x;
@@ -310,14 +317,14 @@ public:
     return ans;
   }
 
-  Vec<T,n>& operator*=(const T& scaler){
+  Vec<T,n>& operator*=(const T& scaler) {
     for (size_t i = 0; i < n; ++i){
       v[i] *= scaler;
     }
     return *this;
   }
 
-  Vec<T,n> operator/(const T& x){
+  Vec<T,n> operator/(const T& x) const {
     Vec<T,n> ans;
     for (size_t i = 0; i < n; ++i){
       ans(i) = v[i]/x;
@@ -369,15 +376,15 @@ public:
     return false;
   }
 private:
-  T _norm1(){
-    T ans;
+  T _norm1() const {
+    T ans = 0;
     for (size_t i = 0; i < n; ++i){
       ans += abs(v[i]);
     }
     return ans;
   }
 
-  auto _norm2(){
+  auto _norm2() const {
 #ifdef EWMATH_MKL
     if constexpr(std::is_same_v<T,float>){
       MKL_INT N = n;
@@ -406,7 +413,7 @@ private:
     }
   }
 
-  T _normInf(){
+  T _normInf() const {
     T ans = INT_MIN;
     for (size_t i = 0; i < n; ++i){
       if (abs(v[i]) > ans) ans = abs(v[i]);
@@ -414,7 +421,7 @@ private:
     return ans;
   }
 public:
-  T norm(char level){
+  T norm(char level) const {
     if (level == '1'){
       return _norm1();
     }else if (level == '2'){
@@ -425,7 +432,7 @@ public:
     return _norm2();
   }
 
-  T norm(){
+  T norm() const {
     return _norm2();
   }
 
@@ -451,7 +458,7 @@ public:
   //   }
   // }
  
-  void normalize(){
+  void normalize() {
     T L = this->norm(); 
     for (size_t i = 0; i < n; ++i){
       v[i] /= L;

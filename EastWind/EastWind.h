@@ -12,6 +12,15 @@
 #include "EW_Codes.h"
 #include "EW_Timestep.h"
 
+#include "Platform/OS/MacOS/CocoaWindow.h"
+#include "Platform/OS/MacOS/OSXInput.h"
+#include "Platform/SDK/OpenGL/OpenGLContext.h"
+#include "Platform/SDK/OpenGL/OpenGLBuffer.h"
+#include "Platform/SDK/OpenGL/OpenGLRenderer.h"
+#include "Platform/SDK/OpenGL/OpenGLShader.h"
+#include "Platform/SDK/OpenGL/OpenGLTexture.h"
+#include "Platform/SDK/OpenGL/OpenGLVertexArray.h"
+
 #include "Event/Event.h"
 #include "Event/ApplicationEvent.h"
 #include "Event/MouseEvent.h"

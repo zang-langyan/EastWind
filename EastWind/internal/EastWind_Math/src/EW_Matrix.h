@@ -100,6 +100,14 @@ public:
     }
   }
 
+  Mat(const std::vector<std::vector<T>>& arr){
+    for (size_t i = 0; i < m; ++i){
+      for (size_t j = 0; j < n; ++j){
+        F_mat[m*j+i] = arr[i][j];
+      }
+    }
+  }
+
   Mat(const Mat<T,m,n>& other){
     for (size_t i = 0; i < m; ++i){
       // mat[i] = new T[n];
@@ -371,9 +379,9 @@ public:
       I.LU.lu[i] = F_mat[i];
     }
     if constexpr(std::is_same_v<T,float>){
-      sgesv_(&N, &N, LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &I.LU.info); 
+      sgesv_(&N, &N, I.LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &I.LU.info); 
     } else if constexpr(std::is_same_v<T,double>){
-      dgesv_(&N, &N, LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &I.LU.info); 
+      dgesv_(&N, &N, I.LU.lu, &N, I.LU.ipiv, I.F_mat, &N, &I.LU.info); 
     }
 #endif
     if (I.LU.info > 0){
@@ -392,11 +400,11 @@ public:
 //   * Norm
 // ==========================================================================
 public:
-  auto norm(char level){
+  double norm(char level) const {
 #ifdef EWMATH_MKL
     if constexpr(std::is_same_v<T,float>){
       MKL_INT M = m, N = n;
-      return LAPACKE_slange(LAPACK_COL_MAJOR, level, M, N, F_mat, M);
+      return (double)LAPACKE_slange(LAPACK_COL_MAJOR, level, M, N, F_mat, M);
     }else if constexpr(std::is_same_v<T,double>){
       MKL_INT M = m, N = n;
       return LAPACKE_dlange(LAPACK_COL_MAJOR, level, M, N, F_mat, M);
@@ -405,32 +413,32 @@ public:
     if constexpr(std::is_same_v<T,float>){
       int M = m, N = n;
       float WORK[(level == 'I'? m : 1)];
-      return slange_(&level, &M, &N, F_mat, &M, WORK);
+      return (double)slange_(&level, &M, &N, F_mat, &M, WORK);
     }else if constexpr(std::is_same_v<T,double>){
       int M = m, N = n;
       double WORK[(level == 'I'? m : 1)];
       return dlange_(&level, &M, &N, F_mat, &M, WORK);
     }else{
       if (level == 'M'){
-        T ans = std::abs(F_mat[0]);
+        long double ans = std::abs(F_mat[0]);
         for (size_t i = 1; i < m*n; ++i){
           if (std::abs(F_mat[i]) > ans){
             ans = std::abs(F_mat[i]);
           } 
         }
-        return ans;
-      }else if (level == '1'){
-        long long ans;
+        return static_cast<double>(ans);
+      } else if (level == '1'){
+        long double ans;
         for (size_t j = 0; j < n; ++j){
-          long long col_sum = 0LL;
+          long double col_sum = 0;
           for (size_t i = 0; i < m; ++i){
             col_sum += F_mat[m*j+i];
           }
           if (j == 0 || col_sum > ans) ans = col_sum;
         }
-        return ans;
-      }else if (level == 'I'){
-        long long ans;
+        return static_cast<double>(ans);
+      } else if (level == 'I'){
+        long double ans;
         for (size_t i = 0; i < n; ++i){
           long long row_sum = 0LL;
           for (size_t j = 0; j < m; ++j){
@@ -438,16 +446,21 @@ public:
           }
           if (i == 0 || row_sum > ans) ans = row_sum;
         }
-        return ans;
-      }else if (level == 'F'){
+        return static_cast<double>(ans);
+      } else if (level == 'F'){
         long double ans = 0.;
         for (size_t i = 0; i < m*n; ++i){
           ans += F_mat[i]*F_mat[i];
         }
         return static_cast<double>(std::sqrt(ans));
+      } else {
+        std::cout << "Unsupported norm level: " << level << std::endl;
+        return static_cast<double>(0.);
       }
+      return static_cast<double>(0.);
     }
 #endif
+    return 0.;
   }
 
 // ==========================================================================
@@ -556,26 +569,26 @@ public:
       MKL_INT M = m, N = k, K = n;
       MKL_INT LDA = m, LDB = n, LDC = m;
       float ALPHA = 1, BETA = 1;
-      cblas_sgemm(CBLAS_LAYOUT::CblasColMajor, TRANSA, TRANSB, M, N, K, ALPHA, mat1.F_mat, LDA, mat2.F_mat, LDB, BETA, ans.F_mat, LDC);
+      cblas_sgemm(CBLAS_LAYOUT::CblasColMajor, TRANSA, TRANSB, M, N, K, ALPHA, mat1.get_ptr(), LDA, mat2.get_ptr(), LDB, BETA, ans.get_ptr(), LDC);
     } else if constexpr(std::is_same_v<T,double>){
       CBLAS_TRANSPOSE TRANSA = CblasNoTrans, TRANSB = CblasNoTrans;
       MKL_INT M = m, N = k, K = n;
       MKL_INT LDA = m, LDB = n, LDC = m;
       double ALPHA = 1, BETA = 1;
-      cblas_dgemm(CBLAS_LAYOUT::CblasColMajor, TRANSA, TRANSB, M, N, K, ALPHA, mat1.F_mat, LDA, mat2.F_mat, LDB, BETA, ans.F_mat, LDC);
+      cblas_dgemm(CBLAS_LAYOUT::CblasColMajor, TRANSA, TRANSB, M, N, K, ALPHA, mat1.get_ptr(), LDA, mat2.get_ptr(), LDB, BETA, ans.get_ptr(), LDC);
 #else
     if constexpr(std::is_same_v<T,float>){
       char TRANSA = 'N', TRANSB = 'N';
       int M = m, N = k, K = n;
       int LDA = m, LDB = n, LDC = m;
       float ALPHA = 1, BETA = 1;
-      sgemm_(&TRANSA, &TRANSB, &M, &N, &K, &ALPHA, mat1.F_mat, &LDA, mat2.F_mat, &LDB, &BETA, ans.F_mat, &LDC);
+      sgemm_(&TRANSA, &TRANSB, &M, &N, &K, &ALPHA, mat1.get_ptr(), &LDA, mat2.get_ptr(), &LDB, &BETA, ans.get_ptr(), &LDC);
     } else if constexpr(std::is_same_v<T,double>){
       char TRANSA = 'N', TRANSB = 'N';
       int M = m, N = k, K = n;
       int LDA = m, LDB = n, LDC = m;
       double ALPHA = 1, BETA = 1;
-      dgemm_(&TRANSA, &TRANSB, &M, &N, &K, &ALPHA, mat1.F_mat, &LDA, mat2.F_mat, &LDB, &BETA, ans.F_mat, &LDC);
+      dgemm_(&TRANSA, &TRANSB, &M, &N, &K, &ALPHA, mat1.get_ptr(), &LDA, mat2.get_ptr(), &LDB, &BETA, ans.get_ptr(), &LDC);
 #endif
     } else {
       for (size_t i = 0; i < m; ++i){
@@ -592,7 +605,28 @@ public:
     return ans;
   }
 
-
+  // Comparison
+  bool operator==(const Mat<T,m,n>& other) const {
+    for (size_t i = 0; i < m; ++i){
+      for (size_t j = 0; j < n; ++j){
+        if (F_mat[m*j+i]-other.F_mat[m*j+i] > EW_EPSILON){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  
+  bool operator==(const Vec<T,n>&& other) const {
+    for (size_t i = 0; i < m; ++i){
+      for (size_t j = 0; j < n; ++j){
+        if (F_mat[m*j+i]-other.F_mat[m*j+i] > EW_EPSILON){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
 };
 

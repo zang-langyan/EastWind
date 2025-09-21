@@ -4,26 +4,34 @@ namespace EastWind {
 
   bool Ray::Hit(const Face& f, const Mat4& modelmat) const 
   {
-    Mat4 Q = modelmat.Inverse().Transpose();
-    float denom = Vec3(Q * Vec4(f.fnormal, 1.f)) * m_dir;
+    Mat4 mm_inv = modelmat.Inverse();
+    Mat4 Q = mm_inv.Transpose();
+    Vec3 transformed_normal = Vec3(Q * Vec4(f.fnormal, 0.f));
+    transformed_normal.normalize();
+    float denom = transformed_normal * m_dir;
     if (fabs(denom) < 1e-6) return false; // Ray is parallel to face
-    float D = Vec3(modelmat * Vec4(f.fv_a->position, 1.f)) * Vec3(Q * Vec4(f.fnormal, 1.f));
-    float t = (D - Vec3(Q * Vec4(f.fnormal, 1.f)) * m_pos) / denom;
+    float D = Vec3(modelmat * Vec4(f.fv_a->position, 1.f)) * transformed_normal;
+    float t = (D - transformed_normal * m_pos) / denom;
     if (t < 0) return false; // Intersection is behind the ray origin
     Vec3 P = m_pos + t * m_dir;
-    return f.contain(P);
+    Vec3 P_local = Vec3(mm_inv * Vec4(P, 1.f));
+    return f.contain(P_local);
   }
 
   bool Ray::Hit(const Face* f, const Mat4& modelmat) const
   {
-    Mat4 Q = modelmat.Inverse().Transpose();
-    float denom = Vec3(Q * Vec4(f->fnormal, 1.f)) * m_dir;
+    Mat4 mm_inv = modelmat.Inverse();
+    Mat4 Q = mm_inv.Transpose();
+    Vec3 transformed_normal = Vec3(Q * Vec4(f->fnormal, 0.f));
+    transformed_normal.normalize();
+    float denom = transformed_normal * m_dir;
     if (fabs(denom) < 1e-6) return false; // Ray is parallel to face
-    float D = Vec3(modelmat * Vec4(f->fv_a->position, 1.f)) * Vec3(Q * Vec4(f->fnormal, 1.f));
-    float t = (D - Vec3(Q * Vec4(f->fnormal, 1.f)) * m_pos) / denom;
+    float D = Vec3(modelmat * Vec4(f->fv_a->position, 1.f)) * transformed_normal;
+    float t = (D - transformed_normal * m_pos) / denom;
     if (t < 0) return false; // Intersection is behind the ray origin
     Vec3 P = m_pos + t * m_dir;
-    return f->contain(P);
+    Vec3 P_local = Vec3(mm_inv * Vec4(P, 1.f));
+    return f->contain(P_local);
   }
 
   bool Ray::Hit(const Mesh& mesh) const

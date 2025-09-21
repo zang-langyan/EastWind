@@ -70,7 +70,7 @@ namespace EastWind {
             ai_mesh->mBitangents[vi].z
           };
         }
-        if (ai_mesh->mColors) {
+        if (ai_mesh->mColors != nullptr) {
           for (int ci = 0; ci < AI_MAX_NUMBER_OF_COLOR_SETS; ++ci) {
             if (ai_mesh->mColors[ci]) { // color set
               v->vcolor = {
@@ -83,7 +83,7 @@ namespace EastWind {
             }
           }
         }
-        if (ai_mesh->mTextureCoords) {
+        if (ai_mesh->mTextureCoords != nullptr) {
           for (int tci = 0; tci < AI_MAX_NUMBER_OF_TEXTURECOORDS; ++tci) {
             if (ai_mesh->mTextureCoords[tci]) { // color set
               v->vtexCoord = {

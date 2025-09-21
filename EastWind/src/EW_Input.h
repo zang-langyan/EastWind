@@ -9,6 +9,8 @@ namespace EastWind {
 class Input
 {
 public:
+  virtual ~Input() = default;
+public:
   inline static bool IsKeyPressed(int keycode) { return s_InputInstance->IsKeyPressedImpl(keycode); }
   inline static bool IsMouseButtonPressed(int button) { return s_InputInstance->IsMouseButtonPressedImpl(button); }
 

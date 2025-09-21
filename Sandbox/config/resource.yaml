@@ -14,5 +14,5 @@ meshes:
   #   path: "./assets/meshes/Dragon_1.obj"
   # - name: "dragon_2"
   #   path: "./assets/meshes/Dragon_2.obj"
-  - name: "heart"
-    path: "./assets/meshes/HumanHeart_FBX.fbx"
+  # - name: "heart"
+  #   path: "./assets/meshes/HumanHeart_FBX.fbx"

@@ -1,12 +1,12 @@
-[submodule "EastWind/vendor/assimp"]
-	path = EastWind/vendor/assimp
-	url = https://github.com/assimp/assimp.git
-[submodule "EastWind/vendor/bullet3"]
-	path = EastWind/vendor/bullet3
-	url = https://github.com/bulletphysics/bullet3.git
-[submodule "EastWind/vendor/gflags"]
-	path = EastWind/vendor/gflags
-	url = https://github.com/gflags/gflags.git
-[submodule "Sandbox/vendor/yaml-cpp"]
-	path = Sandbox/vendor/yaml-cpp
-	url = https://github.com/jbeder/yaml-cpp.git
+# [submodule "EastWind/vendor/assimp"]
+# 	path = EastWind/vendor/assimp
+# 	url = https://github.com/assimp/assimp.git
+# [submodule "EastWind/vendor/bullet3"]
+# 	path = EastWind/vendor/bullet3
+# 	url = https://github.com/bulletphysics/bullet3.git
+# [submodule "EastWind/vendor/gflags"]
+# 	path = EastWind/vendor/gflags
+# 	url = https://github.com/gflags/gflags.git
+# [submodule "Sandbox/vendor/yaml-cpp"]
+# 	path = Sandbox/vendor/yaml-cpp
+# 	url = https://github.com/jbeder/yaml-cpp.git

@@ -35,6 +35,7 @@ target_compile_definitions(EastWind
   PUBLIC "BASIC_TEXTURE_SHADER_GLSL=\"${PROJECT_SOURCE_DIR}/assets/shaders/basic_texture_shader.glsl\""
   PUBLIC "STUDIO_HDRi_IMG=\"${PROJECT_SOURCE_DIR}/assets/textures/poly_haven_studio_4k.hdr\""
 )
+set_target_properties(EastWind PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 target_precompile_headers(EastWind PUBLIC ${PROJECT_SOURCE_DIR}/src/EW_pch.h)
 
