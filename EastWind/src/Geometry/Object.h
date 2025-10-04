@@ -27,6 +27,14 @@ class Sphere: public Mesh
 {
 public:
   Sphere(float radius, int sectors, int stacks);
+
+  float GetRadius() const { return r; }
+  int GetSectors() const { return sectors; }
+  int GetStacks() const { return stacks; }
+private:
+  float r;
+  int sectors;
+  int stacks;
 };
 }
 

@@ -28,7 +28,6 @@ public:
     Line = 2,
     Triangle = 3
   };
-
 public:
   virtual ~Renderer() = default;
 

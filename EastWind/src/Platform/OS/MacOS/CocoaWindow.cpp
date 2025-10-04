@@ -43,7 +43,8 @@ void CocoaWindow::Init(const WindowProps& props)
   m_data.Width = props.Width;
   m_data.Height = props.Height;
 
-  EW_CORE_INFO("Creating Cocoa Window: "+m_data.Title+"   "+std::to_string(m_data.Width)+", "+std::to_string(m_data.Height));
+  EW_CORE_INFO("Creating Cocoa Window: " << m_data.Title 
+              << " (" << std::to_string(m_data.Width) << ", " << std::to_string(m_data.Height) << ")");
 
   if (!s_GLFWInitialized){
     int success = glfwInit();

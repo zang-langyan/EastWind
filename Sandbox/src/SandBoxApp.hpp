@@ -1,3 +1,4 @@
+#pragma once
 #include <EastWind.h>
 #include <EastWind_Math.h>
 #include <EastWind_Graphics.h>

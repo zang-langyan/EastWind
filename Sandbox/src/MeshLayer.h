@@ -1,3 +1,4 @@
+#pragma once
 #include "Geometry/Object.h"
 #include <EastWind.h>
 #include <EastWind_Math.h>
@@ -11,8 +12,8 @@ class MeshLayer: public EastWind::Layer
 public:
   MeshLayer()
     : Layer("Mesh"),
-      m_rabbit(RABBIT_OFF_FILE_PATH),
-      m_sphere(1.f, 50, 50)
+      // m_rabbit(RABBIT_OFF_FILE_PATH),
+      m_sphere(1.f, 5, 5)
       // r(r),g(g),b(b)
   {
     EW_WARN("Rabbit mesh path: " << RABBIT_OFF_FILE_PATH);
@@ -21,10 +22,10 @@ public:
     auto trans_mat = EastWind::translate(EastWind::Vec3({0.f,0.f,-1.f}));
     auto rot_mat = EastWind::rotateX(-PI / 2.f) * EastWind::rotateY(-PI / 2.f) * EastWind::rotateZ(-PI / 6.f) ;
     auto model_mat = scale_mat * trans_mat * rot_mat;
-    m_plane.SetModelMatrix(model_mat);
+    // m_plane.SetModelMatrix(model_mat);
     EW_ERROR(model_mat);
 
-    m_sphere.SetModelMatrix(trans_mat);
+    // m_sphere.SetModelMatrix(trans_mat);
 
     // load shaders
     YAML::Node& resource_cfg = ConfigManager::global_instance().get_config_by_name("resource_cfg");
@@ -95,12 +96,37 @@ public:
     //     EastWind::CameraController::instance().CamRotateZ(-ts*camMovingSpeed);
     // }
 
+    if (m_sphere.GetRadius() != r || m_sphere.GetSectors() != sectors || m_sphere.GetStacks() != stacks) {
+      m_sphere = EastWind::Sphere(r, sectors, stacks);
+      m_sphere.SetModelMatrix(m_ModelMatrix);
+    }
+
     if (EastWind::Input::IsKeyPressed(EW_KEY_LEFT_SUPER) && EastWind::Input::IsKeyPressed(EW_KEY_EQUAL)){
       m_ModelMatrix(0,0) += ts;
       m_ModelMatrix(1,1) += ts;
+      m_ModelMatrix(2,2) += ts;
+      m_sphere.SetModelMatrix(m_ModelMatrix);
     } else if (EastWind::Input::IsKeyPressed(EW_KEY_LEFT_SUPER) && EastWind::Input::IsKeyPressed(EW_KEY_MINUS)){
-      m_ModelMatrix(0,0) = m_ModelMatrix(0,0)-ts >= 0 ? m_ModelMatrix(0,0)-ts : 0;
-      m_ModelMatrix(1,1) = m_ModelMatrix(1,1)-ts >= 0 ? m_ModelMatrix(1,1)-ts : 0;
+      m_ModelMatrix(0,0) = m_ModelMatrix(0,0)-ts > 0 ? m_ModelMatrix(0,0)-ts : 0;
+      m_ModelMatrix(1,1) = m_ModelMatrix(1,1)-ts > 0 ? m_ModelMatrix(1,1)-ts : 0;
+      m_ModelMatrix(2,2) = m_ModelMatrix(2,2)-ts > 0 ? m_ModelMatrix(2,2)-ts : 0;
+      m_sphere.SetModelMatrix(m_ModelMatrix);
+    } else if (EastWind::Input::IsKeyPressed(EW_KEY_LEFT)){
+      auto trans = EastWind::CameraController::instance().GetCamera().GetRightDirection();
+      m_ModelMatrix = EastWind::translate(-trans*ts) * m_ModelMatrix;
+      m_sphere.SetModelMatrix(m_ModelMatrix);
+    } else if (EastWind::Input::IsKeyPressed(EW_KEY_RIGHT)){
+      auto trans = EastWind::CameraController::instance().GetCamera().GetRightDirection();
+      m_ModelMatrix = EastWind::translate(trans*ts) * m_ModelMatrix;
+      m_sphere.SetModelMatrix(m_ModelMatrix);
+    } else if (EastWind::Input::IsKeyPressed(EW_KEY_UP)){
+      auto trans = EastWind::CameraController::instance().GetCamera().GetUpDirection();
+      m_ModelMatrix = EastWind::translate(trans*ts) * m_ModelMatrix;
+      m_sphere.SetModelMatrix(m_ModelMatrix);
+    } else if (EastWind::Input::IsKeyPressed(EW_KEY_DOWN)){
+      auto trans = EastWind::CameraController::instance().GetCamera().GetUpDirection();
+      m_ModelMatrix = EastWind::translate(-trans*ts) * m_ModelMatrix;
+      m_sphere.SetModelMatrix(m_ModelMatrix);
     }
 
     // EastWind::Renderer::ClearColor({*r, *g, *b, *a});
@@ -130,6 +156,10 @@ public:
     //   m_rabbit.Draw();
     // }
     // m_sphere.SetActiveShader("BasicShader");
+
+    m_sphere.SetColor(mesh_color);
+    m_sphere.BuildBuffer();
+
     if (EastWind::Input::GetCursorRay().Hit(m_sphere)) {
       // EW_ERROR("Hitting Sphere Object");
       // m_sphere.SetActiveShader("BasicTextureShader");
@@ -158,9 +188,9 @@ public:
     // --------- Scene End ---------
   }
 
-  void OnEvent(EastWind::Event& e) override
+  void OnEvent(EastWind::Event* e) override
   {
-    EastWind::CameraController::instance().OnEvent(e);
+    EastWind::CameraController::instance().OnEvent(*e);
   }
 
 private:
@@ -171,13 +201,13 @@ private:
   EastWind::Ref<EastWind::Shader> m_MeshShader;
 
   // Objects
-  EastWind::Mesh m_rabbit;
-  EastWind::Cube m_cube;
+  // EastWind::Mesh m_rabbit;
+  // EastWind::Cube m_cube;
   EastWind::Sphere m_sphere;
-  EastWind::Plane m_plane;
+  // EastWind::Plane m_plane;
 
   // HDRi Light Background SkyDome
-  EastWind::SkyDome m_skydome;
+  // EastWind::SkyDome m_skydome;
 
   // Current Mouse Position
   float m_MouseX, m_MouseY;
@@ -185,7 +215,14 @@ private:
   // Model Matrix
   EastWind::Mat<float,4,4> m_ModelMatrix;
 
-  // Background Color
-  // float *r, *g, *b;
+public:
+  static EastWind::Vec4 mesh_color;
+  static float r;
+  static int sectors;
+  static int stacks;
 };
 
+EastWind::Vec4 MeshLayer::mesh_color = EastWind::Vec4({0.5,0.5,0.5,1.0});
+float MeshLayer::r = 1.f;
+int MeshLayer::sectors = 5;
+int MeshLayer::stacks  = 5;

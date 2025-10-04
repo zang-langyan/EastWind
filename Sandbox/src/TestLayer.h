@@ -1,3 +1,4 @@
+#pragma once
 #include <EastWind.h>
 #include <EastWind_Math.h>
 #include <EastWind_Graphics.h>
@@ -209,9 +210,9 @@ public:
       EW_TRACE("Polling: Tab Key Is Pressed!");
   }
 
-  void OnEvent(EastWind::Event& e) override
+  void OnEvent(EastWind::Event* e) override
   {
-    m_Camera.OnEvent(e);
+    m_Camera.OnEvent(*e);
     // if (e.GetEventType() == EastWind::EventType::KeyPressed){
     //   EastWind::KeyPressedEvent& event = (EastWind::KeyPressedEvent&)e;
     //   if (event.GetKeyCode() == EW_KEY_TAB){

@@ -19,12 +19,14 @@ public:
   virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
   virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
 
-  virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_vertexBuffers; };
+  // virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_vertexBuffers; };
+  virtual const Ref<VertexBuffer>& GetVertexBuffers() const override { return m_vertexBuffers; };
   virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_indexBuffer; };
 
 private:
   uint32_t m_VertexArrayId;
-  std::vector<Ref<VertexBuffer>> m_vertexBuffers;
+  // std::vector<Ref<VertexBuffer>> m_vertexBuffers;
+  Ref<VertexBuffer> m_vertexBuffers;
   Ref<IndexBuffer> m_indexBuffer;
 };
 

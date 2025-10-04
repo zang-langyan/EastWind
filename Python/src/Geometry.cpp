@@ -88,12 +88,17 @@ EASTWIND_BIND_FUNC_DEFINE(geometry, m)  {
         .def(pybind11::init<>())
         .def(pybind11::init<const std::string&>())
         .def("GetMeshData", &Mesh::GetMeshData)
-    .def("AddVertex", [](Mesh &m, const PyVec &v){ if (v.size()!=3) throw std::runtime_error("AddVertex expects Vec3"); m.AddVertex(static_cast<Vec<float,3>>(v)); })
-    .def("AddVertex", [](Mesh &m, const PyVec &v, const PyVec &n){ if (v.size()!=3 || n.size()!=3) throw std::runtime_error("AddVertex expects Vec3, Vec3"); m.AddVertex(static_cast<Vec<float,3>>(v), static_cast<Vec<float,3>>(n)); })
+        .def("AddVertex", [](Mesh &m, const PyVec &v){ if (v.size()!=3) throw std::runtime_error("AddVertex expects Vec3"); m.AddVertex(static_cast<Vec<float,3>>(v)); })
+        .def("AddVertex", [](Mesh &m, const PyVec &v, const PyVec &n){ if (v.size()!=3 || n.size()!=3) throw std::runtime_error("AddVertex expects Vec3, Vec3"); m.AddVertex(static_cast<Vec<float,3>>(v), static_cast<Vec<float,3>>(n)); })
         .def("AddFace", &Mesh::AddFace)
+        .def("Draw", [](Mesh& m, const int& primitive_type){
+            Renderer::PrimitiveType pt = static_cast<Renderer::PrimitiveType>(primitive_type);
+            m.Draw(pt);
+        })
         .def("Draw", &Mesh::Draw)
-    .def("SetModelMatrix", [](Mesh &mesh, const PyMat &m){ if (m.rows()!=4 || m.cols()!=4) throw std::runtime_error("SetModelMatrix expects 4x4 matrix"); mesh.SetModelMatrix(Mat<float,4,4>(m)); })
+        .def("SetModelMatrix", [](Mesh &mesh, const PyMat &m){ if (m.rows()!=4 || m.cols()!=4) throw std::runtime_error("SetModelMatrix expects 4x4 matrix"); mesh.SetModelMatrix(Mat<float,4,4>(m)); })
         .def("SetActiveShader", &Mesh::SetActiveShader)
+        .def("ApplyModelMatrix", &Mesh::ApplyModelMatrix)
         .def("GetActiveShader", &Mesh::GetActiveShader)
         .def("BuildBuffer", &Mesh::BuildBuffer)
         .def("SetBufferLayout", static_cast<void (Mesh::*)(const BufferLayout&)>(&Mesh::SetBufferLayout))

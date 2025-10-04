@@ -86,7 +86,8 @@ namespace EastWind {
       ++idx;
     }
 
-    m_vertexBuffers.push_back(vertexBuffer);
+    // m_vertexBuffers.push_back(vertexBuffer);
+    m_vertexBuffers = vertexBuffer;
   }
 
   void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)

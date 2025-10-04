@@ -9,6 +9,7 @@
 
 #include <GLFW/glfw3.h>
 #include "ClearLayer.h"
+#include "MeshLayer.h"
 
 class ImGuiLayer: public EastWind::Layer 
 {
@@ -110,6 +111,25 @@ public:
                         cursor_ray.GetDirection()(0),
                         cursor_ray.GetDirection()(1),
                         cursor_ray.GetDirection()(2));
+
+      ImVec4 mesh_color_vec = ImVec4(
+                        MeshLayer::mesh_color(0), 
+                        MeshLayer::mesh_color(1),
+                        MeshLayer::mesh_color(2),
+                        MeshLayer::mesh_color(3)
+                    );
+
+      ImGui::ColorEdit4("Mesh Color", (float*)&mesh_color_vec);
+      MeshLayer::mesh_color(0) = mesh_color_vec.x;
+      MeshLayer::mesh_color(1) = mesh_color_vec.y;
+      MeshLayer::mesh_color(2) = mesh_color_vec.z;
+      MeshLayer::mesh_color(3) = mesh_color_vec.w;
+
+
+      ImGui::SliderFloat("Sphere Radius", &MeshLayer::r, 0.1f, 10.f);
+      ImGui::SliderInt("Sphere Sectors", &MeshLayer::sectors, 3, 100);
+      ImGui::SliderInt("Sphere Stacks", &MeshLayer::stacks, 2, 100);
+
       ImGui::End();
     } 
 
@@ -128,10 +148,10 @@ public:
   }
 
 
-  void OnEvent(EastWind::Event& e) override
+  void OnEvent(EastWind::Event* e) override
   {
-    if (e.GetEventType() == EastWind::EventType::WindowResize){
-      EastWind::WindowResizeEvent& event = (EastWind::WindowResizeEvent&) e;
+    if (e->GetEventType() == EastWind::EventType::WindowResize){
+      EastWind::WindowResizeEvent& event = (EastWind::WindowResizeEvent&) (*e);
       window_width = event.GetWidth();
       window_height = event.GetHeight();
     }

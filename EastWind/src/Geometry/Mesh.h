@@ -83,6 +83,19 @@ struct MeshData {
   Vec3 central;
 };
 
+struct MeshBufferData {
+  float* vertices = nullptr;
+  uint32_t* indices = nullptr;
+  ~MeshBufferData() {
+    if (vertices) {
+      delete[] vertices;
+    }
+    if (indices) {
+      delete[] indices;
+    }
+  }
+};
+
 class Mesh
 {
 public:
@@ -93,15 +106,21 @@ public:
   Ref<MeshData> GetMeshData() { return m_MeshData; }
   void AddVertex(Vec3 vert);
   void AddVertex(Vec3 vert, Vec3 normal);
+  void AddVertex(Vec3 vert, Vec3 normal, Vec3 tangent, Vec4 color);
   void AddFace(Vec<unsigned int,3> face);
   
   /* Renderer Functions */
   virtual void Draw(Renderer::PrimitiveType primitive_type = Renderer::PrimitiveType::Triangle);
   void SetModelMatrix(const Mat4& modelmat);
+  void ApplyModelMatrix();
   void SetActiveShader(const std::string& name);
   Ref<Shader> GetActiveShader() { return ShaderLibrary::instance().Get(m_ActiveShader); }
   
+  void SetVertexColor(std::size_t index, const Vec4& color);
+  void SetColor(const Vec4& color);
+
   /* Buffer Building */
+  virtual void PrepareBufferData();
   virtual void BuildBuffer();
   void SetBufferLayout(const BufferLayout& layout) { m_BufferLayout = layout; }
   void SetBufferLayout(const std::initializer_list<BufferElement>& elements) { m_BufferLayout = elements; }
@@ -119,7 +138,8 @@ protected:
   BufferLayout m_BufferLayout;
 
   Ref<MeshData> m_MeshData;
-  
+  Ref<MeshBufferData> m_MeshBufferData;
+
   std::string m_ActiveShader = "BasicShader";
 
   Mat4 m_ModelMatrix;

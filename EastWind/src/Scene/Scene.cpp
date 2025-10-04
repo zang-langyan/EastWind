@@ -122,6 +122,7 @@ namespace EastWind {
       }
 
       {
+        mesh.PrepareBufferData();
         mesh.BuildBuffer();
       }
       scene.AddMeshes(mesh);

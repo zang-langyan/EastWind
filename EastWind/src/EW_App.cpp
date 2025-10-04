@@ -58,7 +58,7 @@ namespace EastWind {
   /* Event Callback Function */
   /* 
    * When GLFW Receives a Signal
-   * It dispatch an Event and Bind an Event function (calling it atferwards)*/
+   * It dispatch an Event and Bind an Event function (calling it afterwards)*/
   void App::OnEvent(Event& e)
   {
     EventDispatcher dispatcher(e);
@@ -74,7 +74,7 @@ namespace EastWind {
     }
         
     for (auto itr = m_layerStack.end(); itr != m_layerStack.begin(); ){
-      (*--itr)->OnEvent(e);
+      (*--itr)->OnEvent(&e);
       if (e.Handled){
         // EW_CORE_TRACE(e);
         break;

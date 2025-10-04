@@ -34,6 +34,9 @@ class Event
 {
 friend class EventDispatcher;
 public:
+  Event() = default;
+  virtual ~Event() = default;
+public:
   bool Handled = false;
 
   virtual EventType GetEventType() const = 0;

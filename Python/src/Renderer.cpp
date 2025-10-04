@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/native_enum.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 #include <pybind11/chrono.h>
@@ -10,7 +11,8 @@ using namespace EastWind;
 
 EASTWIND_BIND_FUNC_DEFINE(renderer, m)  {
 
-    pybind11::class_<Renderer>(m, "Renderer")
+    pybind11::class_<Renderer, std::shared_ptr<Renderer>> PyRenderer(m, "Renderer");
+        PyRenderer
         .def_static("ClearColor", [](const std::array<float, 4>& color) {
             float arr[4] = {color[0], color[1], color[2], color[3]};
             Renderer::ClearColor(arr);
@@ -29,6 +31,14 @@ EASTWIND_BIND_FUNC_DEFINE(renderer, m)  {
         })
         .def_static("Submit", &Renderer::Submit)
     ;
+
+    pybind11::native_enum<Renderer::PrimitiveType>(PyRenderer, "PrimitiveType", "enum.Enum")
+        .value("None", Renderer::PrimitiveType::None)
+        .value("Dot", Renderer::PrimitiveType::Dot)
+        .value("Line", Renderer::PrimitiveType::Line)
+        .value("Triangle", Renderer::PrimitiveType::Triangle)
+        .export_values()
+        .finalize();
 
     pybind11::class_<CamPosture>(m, "CamPosture")
         .def_property("right",
@@ -72,21 +82,23 @@ EASTWIND_BIND_FUNC_DEFINE(renderer, m)  {
         .def("SetESRotationX", &Camera::SetESRotationX)
         .def("SetESRotationY", &Camera::SetESRotationY)
         .def("SetESRotationZ", &Camera::SetESRotationZ)
-    .def("GetViewMatrix", [](const Camera &c){ auto m = c.GetViewMatrix(); return PyMat(std::make_shared<PyMat::MatImpl<float,4,4>>(m)); })
-    .def("GetViewProjectionMatrix", [](const Camera &c){ auto m = c.GetViewProjectionMatrix(); return PyMat(std::make_shared<PyMat::MatImpl<float,4,4>>(m)); })
-        .def("RecalculateProjMat", [](Camera &c, const PyVec &fr){ if (fr.size()!=6) throw std::runtime_error("RecalculateProjMat expects Vec6"); c.RecalculateProjMat(static_cast<Vec<float,6>>(fr)); })
-    .def("RecalculateViewMat", static_cast<void (Camera::*)()>(&Camera::RecalculateViewMat))
-    .def("RecalculateViewMat4", [](Camera &c){ Vec<float,4> x,y,z,pos; c.RecalculateViewMat(x,y,z,pos); return py::make_tuple(PyVec(std::make_shared<PyVec::VecImpl<float,4>>(x)), PyVec(std::make_shared<PyVec::VecImpl<float,4>>(y)), PyVec(std::make_shared<PyVec::VecImpl<float,4>>(z)), PyVec(std::make_shared<PyVec::VecImpl<float,4>>(pos))); })
-    .def("RecalculateVPMatrix", &Camera::RecalculateVPMatrix)
-    .def("lookat", [](Camera &c, const PyVec &t){ if (t.size()!=4) throw std::runtime_error("lookat expects Vec4"); return c.lookat(static_cast<Vec<float,4>>(t)); })
-    .def("SetTarget", [](Camera &c, const PyVec &t){ if (t.size()!=4) throw std::runtime_error("SetTarget expects Vec4"); c.SetTarget(static_cast<Vec<float,4>>(t)); })
+        .def("GetViewMatrix", [](const Camera &c){ auto m = c.GetViewMatrix(); return PyMat(std::make_shared<PyMat::MatImpl<float,4,4>>(m)); })
+        .def("GetViewProjectionMatrix", [](const Camera &c){ auto m = c.GetViewProjectionMatrix(); return PyMat(std::make_shared<PyMat::MatImpl<float,4,4>>(m)); })
+            .def("RecalculateProjMat", [](Camera &c, const PyVec &fr){ if (fr.size()!=6) throw std::runtime_error("RecalculateProjMat expects Vec6"); c.RecalculateProjMat(static_cast<Vec<float,6>>(fr)); })
+        .def("RecalculateViewMat", static_cast<void (Camera::*)()>(&Camera::RecalculateViewMat))
+        .def("RecalculateViewMat4", [](Camera &c){ Vec<float,4> x,y,z,pos; c.RecalculateViewMat(x,y,z,pos); return py::make_tuple(PyVec(std::make_shared<PyVec::VecImpl<float,4>>(x)), PyVec(std::make_shared<PyVec::VecImpl<float,4>>(y)), PyVec(std::make_shared<PyVec::VecImpl<float,4>>(z)), PyVec(std::make_shared<PyVec::VecImpl<float,4>>(pos))); })
+        .def("RecalculateVPMatrix", &Camera::RecalculateVPMatrix)
+        .def("lookat", [](Camera &c, const PyVec &t){ if (t.size() > 4) throw std::runtime_error("lookat expects Vec4 or Vec3"); return c.lookat(static_cast<Vec<float,4>>(t)); })
+        .def("SetTarget", [](Camera &c, const PyVec &t){ if (t.size() > 4) throw std::runtime_error("SetTarget expects Vec4 or Vec3"); c.SetTarget(static_cast<Vec<float,4>>(t)); })
     ;
 
     pybind11::class_<CameraController>(m, "CameraController")
         .def(pybind11::init<const float&>())
-        .def_static("instance", &CameraController::instance)
+        .def_static("instance", &CameraController::instance, pybind11::return_value_policy::reference)
         .def("OnUpdate", &CameraController::OnUpdate)
-        .def("OnEvent", &CameraController::OnEvent)
+        .def("OnEvent", [](CameraController &cc, Event* e){
+            cc.OnEvent(*e);
+        })
         .def("GetCamera", static_cast<Camera& (CameraController::*)()>(&CameraController::GetCamera)
                         , pybind11::return_value_policy::reference)
         .def("GetCamera", static_cast<const Camera& (CameraController::*)() const>(&CameraController::GetCamera)
@@ -111,12 +123,22 @@ EASTWIND_BIND_FUNC_DEFINE(renderer, m)  {
         .def("GetName", &OpenGLShader::GetName)
         .def("reload", &OpenGLShader::reload)
         .def("need_reload", &OpenGLShader::need_reload)
-    .def("UploadUniformInt", &OpenGLShader::UploadUniformInt)
-    .def("UploadUniformFloat", &OpenGLShader::UploadUniformFloat)
-    .def("UploadUniformFloat2", [](OpenGLShader &s, const std::string &name, const PyVec &v){ if (v.size()!=2) throw std::runtime_error("UploadUniformFloat2 expects Vec2"); s.UploadUniformFloat2(name, static_cast<Vec<float,2>>(v)); })
-    .def("UploadUniformFloat3", [](OpenGLShader &s, const std::string &name, const PyVec &v){ if (v.size()!=3) throw std::runtime_error("UploadUniformFloat3 expects Vec3"); s.UploadUniformFloat3(name, static_cast<Vec<float,3>>(v)); })
-    .def("UploadUniformFloat4", [](OpenGLShader &s, const std::string &name, const PyVec &v){ if (v.size()!=4) throw std::runtime_error("UploadUniformFloat4 expects Vec4"); s.UploadUniformFloat4(name, static_cast<Vec<float,4>>(v)); })
-    .def("UploadUniformMat3", [](OpenGLShader &s, const std::string &name, const PyMat &m){ if (m.rows()!=3 || m.cols()!=3) throw std::runtime_error("UploadUniformMat3 expects 3x3 matrix"); s.UploadUniformMat3(name, Mat<float,3,3>(m)); })
-    .def("UploadUniformMat4", [](OpenGLShader &s, const std::string &name, const PyMat &m){ if (m.rows()!=4 || m.cols()!=4) throw std::runtime_error("UploadUniformMat4 expects 4x4 matrix"); s.UploadUniformMat4(name, Mat<float,4,4>(m)); })
+        .def("UploadUniformInt", &OpenGLShader::UploadUniformInt)
+        .def("UploadUniformFloat", &OpenGLShader::UploadUniformFloat)
+        .def("UploadUniformFloat2", [](OpenGLShader &s, const std::string &name, const PyVec &v){ if (v.size()!=2) throw std::runtime_error("UploadUniformFloat2 expects Vec2"); s.UploadUniformFloat2(name, static_cast<Vec<float,2>>(v)); })
+        .def("UploadUniformFloat3", [](OpenGLShader &s, const std::string &name, const PyVec &v){ if (v.size()!=3) throw std::runtime_error("UploadUniformFloat3 expects Vec3"); s.UploadUniformFloat3(name, static_cast<Vec<float,3>>(v)); })
+        .def("UploadUniformFloat4", [](OpenGLShader &s, const std::string &name, const PyVec &v){ if (v.size()!=4) throw std::runtime_error("UploadUniformFloat4 expects Vec4"); s.UploadUniformFloat4(name, static_cast<Vec<float,4>>(v)); })
+        .def("UploadUniformMat3", [](OpenGLShader &s, const std::string &name, const PyMat &m){ if (m.rows()!=3 || m.cols()!=3) throw std::runtime_error("UploadUniformMat3 expects 3x3 matrix"); s.UploadUniformMat3(name, Mat<float,3,3>(m)); })
+        .def("UploadUniformMat4", [](OpenGLShader &s, const std::string &name, const PyMat &m){ if (m.rows()!=4 || m.cols()!=4) throw std::runtime_error("UploadUniformMat4 expects 4x4 matrix"); s.UploadUniformMat4(name, Mat<float,4,4>(m)); })
+    ;
+
+    pybind11::class_<GraphicsContext>(m, "GraphicsContext")
+    ;  
+
+    pybind11::class_<OpenGLContext, GraphicsContext>(m, "OpenGLContext")
+        .def("Init", &OpenGLContext::Init)
+        .def("MakeCurrentContext", &OpenGLContext::MakeCurrentContext)
+        .def("MakeNonCurrentContext", &OpenGLContext::MakeNonCurrentContext)
+        .def("SwapBuffers", &OpenGLContext::SwapBuffers)
     ;
 }

@@ -16,7 +16,7 @@ public:
     EastWind::Renderer::ClearBufferAndDepth();
   }
 
-  void OnEvent(EastWind::Event& e) override
+  void OnEvent(EastWind::Event* e) override
   {
 
   }

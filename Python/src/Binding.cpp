@@ -14,4 +14,7 @@ PYBIND11_MODULE(EASTWIND_PY_MODULE_NAME, m) {
     EASTWIND_BIND_FUNC_CALL(math, math);
     EASTWIND_BIND_FUNC_CALL(renderer, m);
     EASTWIND_BIND_FUNC_CALL(geometry, m);
+
+    pybind11::module_ imgui = m.def_submodule("imgui", "EastWind imgui Module");
+    EASTWIND_BIND_FUNC_CALL(imgui, imgui);
 }

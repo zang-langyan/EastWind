@@ -15,13 +15,16 @@ namespace EastWind {
     { EastWind::ShaderDataType::Float4, "vColor" },
   };
 
-  void Mesh::BuildBuffer()
+  constexpr int size_per_vertex = 3 + 3 + 3 + 4;
+
+  void Mesh::PrepareBufferData()
   {
-    // Vertex Buffer
-    Ref<VertexBuffer> vertexBuffer;
     const int n_vertices = m_MeshData->vertices.size();
-    constexpr int size_per_vertex = 3 + 3 + 3 + 4;
-    float* vertices = new float[n_vertices * size_per_vertex];
+    if (m_MeshBufferData && m_MeshBufferData->vertices) {
+      delete[] m_MeshBufferData->vertices;
+    }
+    m_MeshBufferData->vertices = new float[n_vertices * size_per_vertex];
+    float* vertices = m_MeshBufferData->vertices;
     for (int i = 0; i < n_vertices; ++i){
       vertices[i*size_per_vertex]   = m_MeshData->vertices[i]->position(0);
       vertices[i*size_per_vertex+1] = m_MeshData->vertices[i]->position(1);
@@ -40,33 +43,48 @@ namespace EastWind {
       vertices[i*size_per_vertex+11] = m_MeshData->vertices[i]->vcolor(2);
       vertices[i*size_per_vertex+12] = m_MeshData->vertices[i]->vcolor(3);
     }
-    // vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-    vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(float) * n_vertices * size_per_vertex));
-    // EW_CORE_ERROR("sizeof(vertices): " << sizeof(vertices));
-    vertexBuffer->SetLayout(m_BufferLayout);
-    m_BufferState->AddVertexBuffer(vertexBuffer);
-    delete[] vertices;
 
-    // Index Buffer
-    Ref<IndexBuffer> indexBuffer;
     const int n_indices = m_MeshData->faces.size();
-    uint32_t* indices =  new uint32_t[n_indices*3];
+    if (m_MeshBufferData && m_MeshBufferData->indices) {
+      delete[] m_MeshBufferData->indices;
+    }
+    m_MeshBufferData->indices =  new uint32_t[n_indices*3];
+    uint32_t* indices =  m_MeshBufferData->indices;
     for (int i = 0; i < n_indices; ++i){
       indices[i*3]   = m_MeshData->faces[i]->indices(0);
       indices[i*3+1] = m_MeshData->faces[i]->indices(1);
       indices[i*3+2] = m_MeshData->faces[i]->indices(2);
     }
+  }
+
+
+  void Mesh::BuildBuffer()
+  {
+    // Vertex Buffer
+    Ref<VertexBuffer> vertexBuffer;
+    const int n_vertices = m_MeshData->vertices.size();
+    float* vertices = m_MeshBufferData->vertices;
+    // vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+    vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(float) * n_vertices * size_per_vertex));
+    // EW_CORE_ERROR("sizeof(vertices): " << sizeof(vertices));
+    vertexBuffer->SetLayout(m_BufferLayout);
+    m_BufferState->AddVertexBuffer(vertexBuffer);
+
+    // Index Buffer
+    Ref<IndexBuffer> indexBuffer;
+    const int n_indices = m_MeshData->faces.size();
+    uint32_t* indices =  m_MeshBufferData->indices;
     // indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
     indexBuffer.reset(IndexBuffer::Create(indices, n_indices * 3));
     // EW_CORE_ERROR("sizeof(indices): " << sizeof(indices));
     m_BufferState->SetIndexBuffer(indexBuffer);
-    delete[] indices;
   }
 
   Mesh::Mesh()
   {
     MeshData data;
     m_MeshData = std::make_shared<MeshData>(data);
+    m_MeshBufferData.reset(new MeshBufferData);
     
     m_BufferLayout = DEFAULT_LAYOUT;
 
@@ -85,6 +103,7 @@ namespace EastWind {
     }
     m_MeshData = std::make_shared<MeshData>(data);
     // m_MeshData.reset(&data);
+    m_MeshBufferData.reset(new MeshBufferData);
 
 
     m_BufferState = EastWind::BufferState::Create();
@@ -92,6 +111,7 @@ namespace EastWind {
     m_BufferLayout = DEFAULT_LAYOUT;
 
     {
+      PrepareBufferData();
       BuildBuffer();
     }
   }
@@ -110,6 +130,17 @@ namespace EastWind {
     v->vid = m_MeshData->vertices.size();
     v->position = vert;
     v->vnormal = normal;
+    m_MeshData->vertices.push_back(v);
+  }
+
+  void Mesh::AddVertex(Vec3 vert, Vec3 normal, Vec3 tangent, Vec4 color)
+  {
+    Vertex* v = new Vertex;
+    v->vid = m_MeshData->vertices.size();
+    v->position = vert;
+    v->vnormal = normal;
+    v->vtangent = tangent;
+    v->vcolor = color;
     m_MeshData->vertices.push_back(v);
   }
 
@@ -144,6 +175,23 @@ namespace EastWind {
     m_ModelMatrix = modelmat;
   }
 
+  void Mesh::ApplyModelMatrix()
+  {
+    for (auto& v : m_MeshData->vertices){
+      Vec4 pos = Vec4({v->position(0), v->position(1), v->position(2), 1.0f});
+      v->position = Vec3(m_ModelMatrix * pos);
+      Vec4 normal = Vec4({v->vnormal(0), v->vnormal(1), v->vnormal(2), 0.0f});
+      Mat4 mm_inv = m_ModelMatrix.Inverse();
+      Mat4 Q = mm_inv.Transpose();
+      Vec3 transformed_normal = Vec3(Q * normal);
+      transformed_normal.normalize();
+      v->vnormal = transformed_normal;
+    }
+    m_ModelMatrix = Mat4(1.0f);
+    PrepareBufferData();
+    BuildBuffer();
+  }
+
   void Mesh::UploadModelMat()
   {
     ShaderLibrary::instance().Get(m_ActiveShader)->Bind();
@@ -154,6 +202,25 @@ namespace EastWind {
   {
     m_ActiveShader = name;
   }
+
+
+  void Mesh::SetVertexColor(std::size_t index, const Vec4& color)
+  {
+    for (int i = 0; i < 4; ++i) {
+      m_MeshData->vertices[index]->vcolor(i) = color(i);
+      m_MeshBufferData->vertices[index*size_per_vertex+9+i] = color(i);
+    }
+  }
+
+  void Mesh::SetColor(const Vec4& color)
+  {
+    const int n_vertices = m_MeshData->vertices.size();
+    
+    for (int i = 0; i < n_vertices; ++i){
+      SetVertexColor(i, color);
+    }
+  }
+
 
 
   /* OFF File Reading and Building Functions */

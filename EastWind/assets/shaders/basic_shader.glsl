@@ -26,8 +26,8 @@ void main()
   v_Position = vPos;
   v_Normal = vNormal;
   vec3 normal_color = ( vNormal + 1.f ) * 0.5f;
-  v_Color = vec4(normal_color,1.f);
-  // v_Color = vColor;
+  //v_Color = vec4(normal_color,1.f);
+  v_Color = vColor;
   v_WordPos = vec3(u_ModelMatrix * vec4(vPos, 1));
   // v_WordPos = vPos;
   gl_Position = u_VPMatrix * u_ModelMatrix * vec4(vPos.x, vPos.y, vPos.z, 1.0);
@@ -78,7 +78,7 @@ void main()
   material.ka = vec3(0.1);
   material.kd = vec3(1);
   material.ks = vec3(1);
-  material.color = vec3(1., 0.2, 0.3);
+  material.color = vec3(0.2, 0.2, 0.3);
   material.illumination = 0.01;
 
   light.position = vec3(5., 0., 5.);
@@ -114,12 +114,13 @@ void main()
 
   // FragColor = vec4(v_Position*0.5f+0.5f, 1.0f);
   FragColor = vec4(
-              // (ambientColor + diffuseColor) * v_Color.rgb
-              (ambientColor + diffuseColor) * vec3(1.0, 0.1, 0.2)
+              (ambientColor + diffuseColor) * v_Color.rgb
+              // (ambientColor + diffuseColor) * vec3(1.0, 0.1, 0.2)
               + (specularColor * specValue) 
-              + material.illumination * material.color
+              //+ material.illumination * material.color
+              + material.illumination
               , 
-              1.0
+              v_Color.a
             );
-  // FragColor = v_Color;
+  //FragColor = v_Color;
 }

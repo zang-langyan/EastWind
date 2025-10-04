@@ -7,99 +7,154 @@ namespace EastWind {
 
   Plane::Plane()
   {
-    m_BufferState = EastWind::BufferState::Create();
-    float vertices[4*6] = {
-				-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // left bottom
-				 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // right bottom 
-				 1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // right top
-				-1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // left top
-    };
+    // m_BufferState = EastWind::BufferState::Create();
+    // float vertices[4*6] = {
+		// 		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // left bottom
+		// 		 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // right bottom 
+		// 		 1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // right top
+		// 		-1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // left top
+    // };
+    AddVertex(Vec3({-1.0f, -1.0f, 0.0f}), Vec3({0.0f, 0.0f, 1.0f}));
+    AddVertex(Vec3({ 1.0f, -1.0f, 0.0f}), Vec3({0.0f, 0.0f, 1.0f}));
+    AddVertex(Vec3({ 1.0f,  1.0f, 0.0f}), Vec3({0.0f, 0.0f, 1.0f}));
+    AddVertex(Vec3({-1.0f,  1.0f, 0.0f}), Vec3({0.0f, 0.0f, 1.0f}));
 
-    uint32_t indices[6] = {
-      0, 1, 2,
-      2, 3, 0
-    };
-    // Vertex Buffer
-    Ref<VertexBuffer> vertexBuffer;
-    BufferLayout layout = {
-      { EastWind::ShaderDataType::Float3, "aPos"    },
-      { EastWind::ShaderDataType::Float3, "aNormal" },
-    };
+    AddFace(Vec<unsigned int,3>({0, 1, 2}));
+    AddFace(Vec<unsigned int,3>({2, 3, 0}));
     
-    vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-    vertexBuffer->SetLayout(layout);
-    m_BufferState->AddVertexBuffer(vertexBuffer);
+    PrepareBufferData();
+    BuildBuffer();
 
-    // Index Buffer
-    Ref<IndexBuffer> indexBuffer;
-    indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
-    m_BufferState->SetIndexBuffer(indexBuffer);
+    // uint32_t indices[6] = {
+    //   0, 1, 2,
+    //   2, 3, 0
+    // };
+    // // Vertex Buffer
+    // Ref<VertexBuffer> vertexBuffer;
+    // BufferLayout layout = {
+    //   { EastWind::ShaderDataType::Float3, "aPos"    },
+    //   { EastWind::ShaderDataType::Float3, "aNormal" },
+    // };
+    
+    // vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+    // vertexBuffer->SetLayout(layout);
+    // m_BufferState->AddVertexBuffer(vertexBuffer);
+
+    // // Index Buffer
+    // Ref<IndexBuffer> indexBuffer;
+    // indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
+    // m_BufferState->SetIndexBuffer(indexBuffer);
   }
 
   Cube::Cube()
   {
-    m_BufferState = EastWind::BufferState::Create();
-    float vertices[144] = {
-				-1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, // index 0
-				-1.0f, -1.0f,  1.0f, -1.0f, 0.0f, 0.0f,
-				-1.0f,  1.0f,  1.0f, -1.0f, 0.0f, 0.0f,
-				-1.0f,  1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
+    // m_BufferState = EastWind::BufferState::Create();
+    // float vertices[144] = {
+		// 		-1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, // index 0
+		// 		-1.0f, -1.0f,  1.0f, -1.0f, 0.0f, 0.0f,
+		// 		-1.0f,  1.0f,  1.0f, -1.0f, 0.0f, 0.0f,
+		// 		-1.0f,  1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
 
-				 1.0f,  1.0f,  1.0f,  1.0f, 0.0f, 0.0f, // index 4
-				 1.0f, -1.0f,  1.0f,  1.0f, 0.0f, 0.0f,
-				 1.0f, -1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
-				 1.0f,  1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
+		// 		 1.0f,  1.0f,  1.0f,  1.0f, 0.0f, 0.0f, // index 4
+		// 		 1.0f, -1.0f,  1.0f,  1.0f, 0.0f, 0.0f,
+		// 		 1.0f, -1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
+		// 		 1.0f,  1.0f, -1.0f,  1.0f, 0.0f, 0.0f,
 
-				-1.0f, -1.0f, -1.0f,  0.0f, -1.0f, 0.0f, // index 8
-				 1.0f, -1.0f, -1.0f,  0.0f, -1.0f, 0.0f,
-				 1.0f, -1.0f,  1.0f,  0.0f, -1.0f, 0.0f,
-				-1.0f, -1.0f,  1.0f,  0.0f, -1.0f, 0.0f,
+		// 		-1.0f, -1.0f, -1.0f,  0.0f, -1.0f, 0.0f, // index 8
+		// 		 1.0f, -1.0f, -1.0f,  0.0f, -1.0f, 0.0f,
+		// 		 1.0f, -1.0f,  1.0f,  0.0f, -1.0f, 0.0f,
+		// 		-1.0f, -1.0f,  1.0f,  0.0f, -1.0f, 0.0f,
 
-				 1.0f,  1.0f,  1.0f,  0.0f,  1.0f, 0.0f, // index 12
-				 1.0f,  1.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-				-1.0f,  1.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-				-1.0f,  1.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+		// 		 1.0f,  1.0f,  1.0f,  0.0f,  1.0f, 0.0f, // index 12
+		// 		 1.0f,  1.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+		// 		-1.0f,  1.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+		// 		-1.0f,  1.0f,  1.0f,  0.0f,  1.0f, 0.0f,
 
-				-1.0f, -1.0f, -1.0f,  0.0f, 0.0f, -1.0f, // index 16
-				-1.0f,  1.0f, -1.0f,  0.0f, 0.0f, -1.0f,
-				 1.0f,  1.0f, -1.0f,  0.0f, 0.0f, -1.0f,
-				 1.0f, -1.0f, -1.0f,  0.0f, 0.0f, -1.0f,
+		// 		-1.0f, -1.0f, -1.0f,  0.0f, 0.0f, -1.0f, // index 16
+		// 		-1.0f,  1.0f, -1.0f,  0.0f, 0.0f, -1.0f,
+		// 		 1.0f,  1.0f, -1.0f,  0.0f, 0.0f, -1.0f,
+		// 		 1.0f, -1.0f, -1.0f,  0.0f, 0.0f, -1.0f,
 
-				 1.0f,  1.0f,  1.0f,  0.0f, 0.0f, 1.0f, // index 20
-				-1.0f,  1.0f,  1.0f,  0.0f, 0.0f, 1.0f,
-				-1.0f, -1.0f,  1.0f,  0.0f, 0.0f, 1.0f,
-				 1.0f, -1.0f,  1.0f,  0.0f, 0.0f, 1.0f
-    };
+		// 		 1.0f,  1.0f,  1.0f,  0.0f, 0.0f, 1.0f, // index 20
+		// 		-1.0f,  1.0f,  1.0f,  0.0f, 0.0f, 1.0f,
+		// 		-1.0f, -1.0f,  1.0f,  0.0f, 0.0f, 1.0f,
+		// 		 1.0f, -1.0f,  1.0f,  0.0f, 0.0f, 1.0f
+    // };
+    AddVertex(Vec3({-1.0f, -1.0f, -1.0f}), Vec3({-1.0f,  0.0f,  0.0f}));
+    AddVertex(Vec3({-1.0f, -1.0f,  1.0f}), Vec3({-1.0f,  0.0f,  0.0f}));
+    AddVertex(Vec3({-1.0f,  1.0f,  1.0f}), Vec3({-1.0f,  0.0f,  0.0f}));
+    AddVertex(Vec3({-1.0f,  1.0f, -1.0f}), Vec3({-1.0f,  0.0f,  0.0f}));
+  
+    AddVertex(Vec3({ 1.0f,  1.0f,  1.0f}), Vec3({ 1.0f,  0.0f,  0.0f}));
+    AddVertex(Vec3({ 1.0f, -1.0f,  1.0f}), Vec3({ 1.0f,  0.0f,  0.0f}));
+    AddVertex(Vec3({ 1.0f, -1.0f, -1.0f}), Vec3({ 1.0f,  0.0f,  0.0f}));
+    AddVertex(Vec3({ 1.0f,  1.0f, -1.0f}), Vec3({ 1.0f,  0.0f,  0.0f}));
+      
+    AddVertex(Vec3({-1.0f, -1.0f, -1.0f}), Vec3({ 0.0f, -1.0f,  0.0f}));
+    AddVertex(Vec3({ 1.0f, -1.0f, -1.0f}), Vec3({ 0.0f, -1.0f,  0.0f}));
+    AddVertex(Vec3({ 1.0f, -1.0f,  1.0f}), Vec3({ 0.0f, -1.0f,  0.0f}));
+    AddVertex(Vec3({-1.0f, -1.0f,  1.0f}), Vec3({ 0.0f, -1.0f,  0.0f}));
+  
+    AddVertex(Vec3({ 1.0f,  1.0f,  1.0f}), Vec3({ 0.0f,  1.0f,  0.0f}));
+    AddVertex(Vec3({ 1.0f,  1.0f, -1.0f}), Vec3({ 0.0f,  1.0f,  0.0f}));
+    AddVertex(Vec3({-1.0f,  1.0f, -1.0f}), Vec3({ 0.0f,  1.0f,  0.0f}));
+    AddVertex(Vec3({-1.0f,  1.0f,  1.0f}), Vec3({ 0.0f,  1.0f,  0.0f}));
+  
+    AddVertex(Vec3({-1.0f, -1.0f, -1.0f}), Vec3({ 0.0f,  0.0f, -1.0f}));
+    AddVertex(Vec3({-1.0f,  1.0f, -1.0f}), Vec3({ 0.0f,  0.0f, -1.0f}));
+    AddVertex(Vec3({ 1.0f,  1.0f, -1.0f}), Vec3({ 0.0f,  0.0f, -1.0f}));
+    AddVertex(Vec3({ 1.0f, -1.0f, -1.0f}), Vec3({ 0.0f,  0.0f, -1.0f}));
+  
+    AddVertex(Vec3({ 1.0f,  1.0f,  1.0f}), Vec3({ 0.0f,  0.0f,  1.0f}));
+    AddVertex(Vec3({-1.0f,  1.0f,  1.0f}), Vec3({ 0.0f,  0.0f,  1.0f}));
+    AddVertex(Vec3({-1.0f, -1.0f,  1.0f}), Vec3({ 0.0f,  0.0f,  1.0f}));
+    AddVertex(Vec3({ 1.0f, -1.0f,  1.0f}), Vec3({ 0.0f,  0.0f,  1.0f}));
 
-    uint32_t indices[36] = {
-			0, 1, 2, 
-			2, 3, 0, 
-			4, 5, 6, 
-			6, 7, 4, 
-			8, 9, 10, 
-			10, 11, 8, 
-			12, 13, 14, 
-			14, 15, 12, 
-			16, 17, 18, 
-			18, 19, 16, 
-			20, 21, 22, 
-			22, 23, 20
-		};
-    // Vertex Buffer
-    Ref<VertexBuffer> vertexBuffer;
-    BufferLayout layout = {
-      { EastWind::ShaderDataType::Float3, "aPos"    },
-      { EastWind::ShaderDataType::Float3, "aNormal" },
-    };
+    // uint32_t indices[36] = {
+		// 	0, 1, 2, 
+		// 	2, 3, 0, 
+		// 	4, 5, 6, 
+		// 	6, 7, 4, 
+		// 	8, 9, 10, 
+		// 	10, 11, 8, 
+		// 	12, 13, 14, 
+		// 	14, 15, 12, 
+		// 	16, 17, 18, 
+		// 	18, 19, 16, 
+		// 	20, 21, 22, 
+		// 	22, 23, 20
+		// };
+    AddFace(Vec<unsigned int,3>({ 0,  1,  2}));
+    AddFace(Vec<unsigned int,3>({ 2,  3,  0}));
+    AddFace(Vec<unsigned int,3>({ 4,  5,  6}));
+    AddFace(Vec<unsigned int,3>({ 6,  7,  4}));
+    AddFace(Vec<unsigned int,3>({ 8,  9, 10}));
+    AddFace(Vec<unsigned int,3>({10, 11,  8}));
+    AddFace(Vec<unsigned int,3>({12, 13, 14}));
+    AddFace(Vec<unsigned int,3>({14, 15, 12}));
+    AddFace(Vec<unsigned int,3>({16, 17, 18}));
+    AddFace(Vec<unsigned int,3>({18, 19, 16}));
+    AddFace(Vec<unsigned int,3>({20, 21, 22}));
+    AddFace(Vec<unsigned int,3>({22, 23, 20}));
+
+    PrepareBufferData();
+    BuildBuffer();
     
-    vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-    vertexBuffer->SetLayout(layout);
-    m_BufferState->AddVertexBuffer(vertexBuffer);
+    // Vertex Buffer
+    // Ref<VertexBuffer> vertexBuffer;
+    // BufferLayout layout = {
+    //   { EastWind::ShaderDataType::Float3, "aPos"    },
+    //   { EastWind::ShaderDataType::Float3, "aNormal" },
+    // };
+    
+    // vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+    // vertexBuffer->SetLayout(layout);
+    // m_BufferState->AddVertexBuffer(vertexBuffer);
 
-    // Index Buffer
-    Ref<IndexBuffer> indexBuffer;
-    indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
-    m_BufferState->SetIndexBuffer(indexBuffer);
+    // // Index Buffer
+    // Ref<IndexBuffer> indexBuffer;
+    // indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
+    // m_BufferState->SetIndexBuffer(indexBuffer);
   }
  
   /*
@@ -116,6 +171,7 @@ namespace EastWind {
    * theta = j * sectorStep
    */
   Sphere::Sphere(float radius, int sectors, int stacks)
+  : r(radius), sectors(sectors), stacks(stacks)
   {
     float sectorStep = 2*PI/sectors;
     float stackStep = PI/stacks;
@@ -147,9 +203,9 @@ namespace EastWind {
         vertices[(j+i*(sectors+1))*8 + 3] = nx;
         vertices[(j+i*(sectors+1))*8 + 4] = ny;
         vertices[(j+i*(sectors+1))*8 + 5] = nz;
-        vertices[(j+i*(sectors+1))*8 + 6] = 1-s;
+        vertices[(j+i*(sectors+1))*8 + 6] = 1-s; // texture coordinates
         vertices[(j+i*(sectors+1))*8 + 7] = 1-t;
-        AddVertex(Vec3({x, y, z}), Vec3({nx, ny, nz}));// texture coordinates
+        AddVertex(Vec3({x, y, z}), Vec3({nx, ny, nz}));
       }
     }
 
@@ -179,23 +235,26 @@ namespace EastWind {
       }
     }
 
-    m_BufferState = EastWind::BufferState::Create();
-    // Vertex Buffer
-    Ref<VertexBuffer> vertexBuffer;
-    BufferLayout layout = {
-      { EastWind::ShaderDataType::Float3, "aPos"    },
-      { EastWind::ShaderDataType::Float3, "aNormal" },
-      { EastWind::ShaderDataType::Float2, "aTexCoord" },
-    };
-    
-    vertexBuffer.reset(VertexBuffer::Create(vertices.data(), sizeof(float) * vertices.size()));
-    vertexBuffer->SetLayout(layout);
-    m_BufferState->AddVertexBuffer(vertexBuffer);
+    PrepareBufferData();
+    BuildBuffer();
 
-    // Index Buffer
-    Ref<IndexBuffer> indexBuffer;
-    indexBuffer.reset(IndexBuffer::Create(indices.data(), indices.size()));
-    m_BufferState->SetIndexBuffer(indexBuffer);
+    // m_BufferState = EastWind::BufferState::Create();
+    // // Vertex Buffer
+    // Ref<VertexBuffer> vertexBuffer;
+    // BufferLayout layout = {
+    //   { EastWind::ShaderDataType::Float3, "aPos"    },
+    //   { EastWind::ShaderDataType::Float3, "aNormal" },
+    //   { EastWind::ShaderDataType::Float2, "aTexCoord" },
+    // };
+    
+    // vertexBuffer.reset(VertexBuffer::Create(vertices.data(), sizeof(float) * vertices.size()));
+    // vertexBuffer->SetLayout(layout);
+    // m_BufferState->AddVertexBuffer(vertexBuffer);
+
+    // // Index Buffer
+    // Ref<IndexBuffer> indexBuffer;
+    // indexBuffer.reset(IndexBuffer::Create(indices.data(), indices.size()));
+    // m_BufferState->SetIndexBuffer(indexBuffer);
 
     // m_ActiveShader = "BasicTextureShader";
   }

@@ -17,7 +17,6 @@ public:
   inline static std::pair<float, float> GetMousePosition() { return s_InputInstance->GetMousePositionImpl(); }
   inline static float GetMouseX() { return s_InputInstance->GetMouseXImpl(); }
   inline static float GetMouseY() { return s_InputInstance->GetMouseYImpl(); }
-
 public:
   static const Ray GetCursorRay() {
     const auto& [mousePosX, mousePosY] = Input::GetMousePosition();
